@@ -1,5 +1,6 @@
 #' Get data and prepare for clustering
 #' EMC 3/9/20
+#' last run: 6/16/20
 
 library(dplyr)
 
