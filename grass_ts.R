@@ -25,11 +25,11 @@ write.csv(quadyear,'data/quadyearcrosstab.csv', row.names = F)
 #   removed AR6 -- too close to AR5 (11m)
 #   removed J12 -- too close to J1 (35m)
 #   removed K2 -- no samples between 1925 and 1965
+#   removed K4 -- missing samples
 #   removed L3A -- too physically close to L3 (0m)
 #   removed M5 -- too close to M6 (44m) and was missing more than M6
-#   removed N3 -- kind of close to N3A (60m) and missing 1929-1930
 #   removed Y2 -- too close to Y1 (14m)
-# missing 1 or 2 sample from time period, may remove: J22, K1, M6, N3, N4, P1, T8
+# missing 1 or 2 sample from time period, may remove: J22, K1, M6, N3, N4, P1, T1, T4, T8
 # NOTE: P1 1938 exists as a scan but not digitized
 tsquads1 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5','AR6',
             'B1','B2','B2A','B3','B4','B5',
@@ -38,11 +38,12 @@ tsquads1 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5','AR6',
             'I1','I2','I3','I4','I5','I6','I7',
             'J1','J8','J9','J22',
             'K1','K3',
-            'L1','L2','L3','L4',
+            'L1','L2','L3','L4','L5',
             'M6',
             'N1','N3','N3A','N4','N5','N6',
             'P1','P2','P3','P4','P5',
             'R1','R2','R3','R4',
+            'T1','T2','T3','T4',
             'T5','T6','T7','T8','T9','T10','T11',
             'U1','U2','U3','U4','U5',
             'V1','V2','V3','V4','V5','V6',
@@ -64,29 +65,34 @@ write.csv(quadyear1,'data/quadyearcrosstab1.csv', row.names = F)
 # second drought hit somewhere between 1950 and 1955
 # quadrats to be used for analysis:
 #   not using N, P, R series yet
+#   removed AR6 -- too close to AR5 (11m)
 #   removed L3A -- too physically close to L3 (0m)  
+#   removed J12 -- too close to J1 (35m)
 #   removed K2 -- no samples between 1925 and 1965
+#   removed L5 -- missing samples
 #   removed M5, M6 -- missing many samples, none after 1957
-#   removed N4 -- no samples after 1934
-#   removed T5-T11 -- no samples between 1944 and 1968
+#   removed T1-T11 -- no samples between 1944 and 1968
 #   removed P1-P5 -- missing many samples between 1947-1975
-#   removed Y1, Y2 -- missing many samples 1942-1960
-#   removed Y3, Y7 -- no samples after 1942
-tsquads2 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5','AR6',
+#   removed Y1, Y2, Y3, Y7 -- missing many samples 1942-1960
+
+tsquads2 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5',
              'B1','B2','B2A','B3','B4','B5',
              'G1','G2','G3','G4','G5','G6',
              'H1','H2','H3',
              'I1','I2','I3','I4','I5','I6','I7',
-             'J1','J8','J9','J12','J22',
-             'K1','K3',
+             'J1','J8','J9','J22',
+             'K1','K3','K4',
              'L1','L2','L3','L4',
+             #'L5',
              #'M5','M6',
-             'N1','N3','N3A',
+             'N1','N3','N3A','N4','N5','N6',
              #'P1','P2','P3','P4','P5',
              'R1','R2','R3','R4',
+             #'T1','T2','T3','T4',
              #'T5','T6','T7','T8','T9','T10','T11',
              'U1','U2','U3','U4','U5',
              'V1','V2','V3','V4','V5','V6')
+             #'Y1','Y2','Y3','Y7')
 
 # years to be used in analysis
 #    lots missing in 1948, 1953-1955
@@ -100,7 +106,7 @@ quadyear2 = dplyr::filter(sampledates, project_year %in% tsyears2,
   tidyr::spread(project_year, value=n)
 write.csv(quadyear2,'data/quadyearcrosstab2.csv', row.names = F)
 # =============================================================
-plantcover2 = dplyr::filter(plantcover, quadrat %in% tsquads) %>%
+plantcover2 = dplyr::filter(plantcover, quadrat %in% tsquads1) %>%
   group_by(quadrat)
 
 ggplot(plantcover2, aes(x=date, y=total_grass)) + geom_point() +
