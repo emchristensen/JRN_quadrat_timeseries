@@ -1,6 +1,8 @@
 #' Get data and prepare for clustering
 #' EMC 3/9/20
-#' last run: 7/21/20
+#' 
+#' Note: yucca species removed from shrub cover total because they are short-lived
+#' last run: 8/4/20
 
 library(dplyr)
 
@@ -10,14 +12,14 @@ cover1 = read.csv(paste0(datafolder, 'Jornada_quadrat_cover.csv'), stringsAsFact
 cover2 = read.csv(paste0(datafolder,'Jornada_quadrat_cover_new.csv'), stringsAsFactors = F)
 counts1 = read.csv(paste0(datafolder, 'Jornada_quadrat_forb_counts.csv'), stringsAsFactors = F)
 counts2 = read.csv(paste0(datafolder,'Jornada_quadrat_forb_counts_new.csv'), stringsAsFactors = F)
-dates = read.csv(paste0(datafolder, 'quadrat_sample_dates_202007.csv'), stringsAsFactors = F)
+dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates_20200803.csv'), stringsAsFactors = F)
 splist = read.csv(paste0(datafolder, 'Jornada_quadrat_species_list_WIP.csv'), stringsAsFactors = F)
 
 
 # calculate total shrub, grass, and forb
 shrub = rbind(cover1, cover2) %>%
   merge(splist) %>%
-  dplyr::filter(form=='SHRUB') %>%
+  dplyr::filter(form=='SHRUB', !(species_code %in% c('YUBA','YUEL'))) %>%
   group_by(quadrat, project_year, year, month) %>%
   summarize(total_shrub = sum(area)) %>%
   merge(dates, all=T)
