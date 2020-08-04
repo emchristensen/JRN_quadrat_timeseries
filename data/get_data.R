@@ -1,6 +1,8 @@
 #' Get data and prepare for clustering
 #' EMC 3/9/20
 #' 
+#' Shrub species: ATCA2, EPHED, EPTO, EPTR, FLCE, KRLA2, LATR2, LYBE, PRGL2, PSSC6, VACO9
+#' Grass species: (many)
 #' Note: yucca species removed from shrub cover total because they are short-lived
 #' last run: 8/4/20
 
