@@ -1,0 +1,11 @@
+originalName,oldspeciescode,newName,newspeciescode,
+Aristida pansa,ARPA9,Aristida spp.,ARIST,PerennialGrass
+Aristida purpurea,ARPU9,Aristida spp.,ARIST,PerennialGrass
+Aristida purpurea v. longiseta,ARPUL,Aristida spp.,ARIST,PerennialGrass
+Cyperus retroflexus,CYRE14,Cyperus spp.,CYPER,Perennial Grass
+Ephedra torreyana,EPTO,Ephedra spp.,EPHED,Shrub
+Ephedra trifurca,EPTR,Ephedra spp.,EPHED,Shrub
+Sporobolus nealleyi,SPNE,Muhlenbergia arenacea,MUAR,PerennialGrass
+Muhlenbergia torreyi,MUTO2,Muhlenbergia arenicola,MUAR2,PerennialGrass
+Sporobolus contractus,SPCO4,Sporobolus flexuosus,SPFL2,PerennialGrass
+Sporobolus cryptandrus,SPCR,Sporobolus flexuosus,SPFL2,PerennialGrass
