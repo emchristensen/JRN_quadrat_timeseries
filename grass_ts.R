@@ -31,7 +31,7 @@ write.csv(quadyear,'data/quadyearcrosstab.csv', row.names = F)
 #   removed Y2 -- too close to Y1 (14m)
 # missing 1 or 2 sample from time period, may remove: J22, K1, M6, N3, N4, P1, T1, T4, T8
 # NOTE: P1 1938 exists as a scan but not digitized
-tsquads1 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5',
+tsquads1 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR4','AR5',
             'B1','B2','B2A','B3','B4','B5',
             'G1','G2','G3','G4','G5','G6',
             'H1','H2','H3',
@@ -89,7 +89,7 @@ write.csv(pc_wide, 'data/grasscover1_wide.csv', row.names = F)
 #   removed P1-P5 -- missing many samples between 1947-1975
 #   removed Y1, Y2, Y3, Y7 -- missing many samples 1942-1960
 
-tsquads2 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5',
+tsquads2 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR4','AR5',
              'B1','B2','B2A','B3','B4','B5',
              'G1','G2','G3','G4','G5','G6',
              'H1','H2','H3',
