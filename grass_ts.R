@@ -31,7 +31,7 @@ write.csv(quadyear,'data/quadyearcrosstab.csv', row.names = F)
 #   removed Y2 -- too close to Y1 (14m)
 # missing 1 or 2 sample from time period, may remove: J22, K1, M6, N3, N4, P1, T1, T4, T8
 # NOTE: P1 1938 exists as a scan but not digitized
-tsquads1 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5','AR6',
+tsquads1 = c('A1','A2','A3','A4','A5','AR1','AR2','AR3','AR5',
             'B1','B2','B2A','B3','B4','B5',
             'G1','G2','G3','G4','G5','G6',
             'H1','H2','H3',
@@ -60,6 +60,20 @@ quadyear1 = dplyr::filter(sampledates, project_year %in% tsyears1,
   group_by(quadrat, project_year) %>% tally() %>%
   tidyr::spread(project_year, value=n)
 write.csv(quadyear1,'data/quadyearcrosstab1.csv', row.names = F)
+
+# write data to csv ready for modeling
+plantcover1 = dplyr::filter(plantcover, 
+                            quadrat %in% tsquads1, 
+                            project_year %in% tsyears1)
+# get rid of second sample in 1935
+plantcover1 = plantcover1[plantcover1$date< as.Date('1935-01-01') | plantcover1$date>as.Date('1935-09-30'),] %>%
+  unique()
+# write to csv and get rid of second sample in a year when present (R4 1934)
+write.csv(plantcover1,'data/grasscover1_raw.csv', row.names = F)
+plantcover1 = read.csv('data/grasscover1_raw.csv', stringsAsFactors = F)
+
+pc_wide = tidyr::pivot_wider(plantcover1, id_cols=quadrat, names_from=project_year, values_from = total_grass)
+write.csv(pc_wide, 'data/grasscover1_wide.csv', row.names = F)
 
 # time period 2: 1945-1960 ----
 # second drought hit somewhere between 1950 and 1955
@@ -105,11 +119,25 @@ quadyear2 = dplyr::filter(sampledates, project_year %in% tsyears2,
   group_by(quadrat, project_year) %>% tally() %>%
   tidyr::spread(project_year, value=n)
 write.csv(quadyear2,'data/quadyearcrosstab2.csv', row.names = F)
-# =============================================================
-plantcover2 = dplyr::filter(plantcover, quadrat %in% tsquads1) %>%
-  group_by(quadrat)
 
+plantcover2 = dplyr::filter(plantcover, quadrat %in% tsquads2, project_year %in% tsyears2) %>%
+  group_by(quadrat)
+# =============================================================
+
+# plots to explore data -- time period 1
+plotdat = dplyr::filter(plantcover1, quadrat %in% c('A1','A2','A3','A4','A5','AR1','AR2','AR3'))
+ggplot(plotdat, aes(x=project_year, y=total_grass)) + geom_point() +
+  geom_line(aes(color=quadrat)) +
+  #geom_line() +
+  #theme(legend.position = 'none') +
+  theme_bw()
+
+
+
+
+
+# time period 2 ----
 ggplot(plantcover2, aes(x=date, y=total_grass)) + geom_point() +
-  #geom_line(aes(color=quadrat)) +
+  geom_line(aes(color=quadrat)) +
   #geom_line() +
   theme(legend.position = 'none')
