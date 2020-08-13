@@ -1,4 +1,4 @@
-#' Get data and prepare for clustering
+#' Get data and prepare for analysis
 #' EMC 3/9/20
 #' 
 #' Shrub species: ATCA2, EPHED, FLCE, KRLA2, LATR2, LYBE, PRGL2, PSSC6, VACO9
@@ -11,9 +11,10 @@
 #'     changed SPCO4 -> SPFL2
 #'     changed SPCR -> SPFL2
 #'     changed ARPA9, ARPU9, ARPUL -> ARIST
-#' last run: 8/10/20
+#' last run: 8/12/20
 
 library(dplyr)
+library(lubridate)
 
 # read in data
 datafolder = '../JRN_quadrat_datapaper/Plants/'
@@ -24,7 +25,50 @@ counts2 = read.csv(paste0(datafolder,'Jornada_quadrat_forb_counts_new.csv'), str
 dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates_20200803.csv'), stringsAsFactors = F)
 splist = read.csv(paste0(datafolder, 'Jornada_quadrat_species_list_WIP.csv'), stringsAsFactors = F)
 spchanges = read.csv('data/species_name_changes.csv', stringsAsFactors = F)
+quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% dplyr::select(quadrat, vegtype, upland)
 
+
+#  setup file ----
+# quadrats ready to use for analysis (skipped L3A --too close to L3)
+#    NEW: K4, L5, N2, N3, N3A, P3, P4, P5, T1, T2, T3
+#    SOON: K4, N1, N4, N5, N6, P1, P2, R1, R2, R3, R4
+quads = c('A1','A2','A3','A4','A5',
+          'AR1','AR2','AR3','AR4','AR5','AR6',
+          'B1','B2','B2A','B3','B4','B5',
+          'G1','G2','G3','G4','G5','G6',
+          'H1','H2','H3',
+          'I1','I2','I3','I4','I5','I6','I7',
+          'J1','J8','J9','J12','J22',
+          'K1','K2','K3',
+          'K4',
+          'L1','L2','L3','L4',
+          'L5',
+          'M5','M6',
+          'N2','N3','N3A',
+          'N1','N4','N5','N6',
+          'P1','P2',
+          'P3','P4','P5',
+          'R1','R2','R3','R4',
+          'T1','T2','T3',
+          'T5','T6','T7','T8','T9','T10','T11',
+          'U1','U2','U3','U4','U5',
+          'V1','V2','V3','V4','V5','V6',
+          'Y1','Y2','Y3','Y7')
+
+# create file indicating which dates/quadrats will be used for these analyses
+quaddates = dates %>% dplyr::filter(quadrat %in% quads) %>%
+  mutate(date=as.Date(paste(year, month, day, sep='-'))) %>% 
+  group_by(quadrat, project_year) %>%
+  summarize(lastdate = max(date)) %>%
+  ungroup() %>%
+  mutate(month = month(lastdate),
+         day = day(lastdate),
+         year = year(lastdate)) %>%
+  dplyr::select(quadrat, project_year, year, month, day) %>%
+  arrange(quadrat, project_year)
+
+# write to file
+write.csv(quaddates, 'data/quadrats_dates_for_analysis.csv', row.names = F)
 
 # calculate total cover by species ----
 
