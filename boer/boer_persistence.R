@@ -49,13 +49,13 @@ boer_presence = ggplot(boer_quads_per_year, aes(x=project_year, y=pct_boer)) +
   ggtitle('Presence of BOER4') +
   theme_bw()
 boer_presence
-ggsave(filename='boer_presence_timeseries.png', plot=boer_presence, width=5, height=4)
+ggsave(filename='boer/boer_presence_timeseries.png', plot=boer_presence, width=5, height=4)
 
 # look at data in wide format, did a quadrat go to zero then recover?
 boer_wide = boer %>% dplyr::select(quadrat, project_year, totalarea) %>%
   tidyr::pivot_wider(names_from=project_year, values_from=totalarea)
 boer_wide = boer_wide[,order(names(boer_wide))]
-write.csv(boer_wide,'data/boer_wide_format.csv', row.names=F)
+write.csv(boer_wide,'boer/boer_wide_format.csv', row.names=F)
 
 
 # average boer cover per quadrat
@@ -74,11 +74,11 @@ boer_cover = ggplot(boer_avg_cover, aes(x=project_year, y=avgcover)) +
   ggtitle('Avg. BOER4 cover per quadrat') +
   theme_bw()
 boer_cover
-ggsave(filename='boer_avg_cover_timeseries.png', plot=boer_cover, width=5, height=4)
+ggsave(filename='boer/boer_avg_cover_timeseries.png', plot=boer_cover, width=5, height=4)
 
 # ====================
 # what are the patterns of covariates for quads that recovered/did not recover boer?
-boer_categories = read.csv('data/boer_time_perioods_presenceabsence.csv', stringsAsFactors = F)
+boer_categories = read.csv('boer/boer_time_perioods_presenceabsence.csv', stringsAsFactors = F)
 shrub = read.csv('data/quadrat_veg.csv', stringsAsFactors = F)
 soil = read.csv('../JRN_quadrat_datapaper/Soil/Jornada_quadrat_soil_PSA.csv', stringsAsFactors = F)
 
