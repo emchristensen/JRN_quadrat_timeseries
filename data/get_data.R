@@ -25,7 +25,7 @@ counts2 = read.csv(paste0(datafolder,'Jornada_quadrat_forb_counts_new.csv'), str
 dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates_20200803.csv'), stringsAsFactors = F)
 splist = read.csv(paste0(datafolder, 'Jornada_quadrat_species_list_WIP.csv'), stringsAsFactors = F)
 spchanges = read.csv('data/species_name_changes.csv', stringsAsFactors = F)
-quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% dplyr::select(quadrat, vegtype, upland)
+quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% dplyr::select(quadrat, vegtype, upland_byspecies)
 
 
 #  setup file ----
@@ -72,28 +72,29 @@ write.csv(quaddates, 'data/quadrats_dates_for_analysis.csv', row.names = F)
 
 # calculate total cover by species ----
 
-shrub = rbind(cover1, cover2) %>%
-  merge(splist) %>%
-  dplyr::filter(form=='SHRUB', !(species_code %in% c('YUBA','YUEL'))) %>%
-  group_by(quadrat, project_year, year, month, species_code) %>%
-  summarize(totalarea = sum(area)) %>%
-  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
 # make species name changes
-shrub$species = shrub$newspeciescode
-shrub$species[is.na(shrub$species)] <- shrub$species_code[is.na(shrub$species)]
+cover_spchanged = rbind(cover1, cover2) %>%
+  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
+cover_spchanged$species = cover_spchanged$newspeciescode
+cover_spchanged$species[is.na(cover_spchanged$species)] <- cover_spchanged$species_code[is.na(cover_spchanged$species)]
+
+# total shrub cover by species
+shrub = cover_spchanged %>%
+  merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
+  dplyr::filter(form=='SHRUB', !(species %in% c('YUBA','YUEL'))) %>%
+  group_by(quadrat, project_year, year, month, species) %>%
+  summarize(totalarea = sum(area)) 
+
 shrubfinal = dplyr::select(shrub, quadrat, project_year, year, month, species, totalarea)
 write.csv(shrubfinal, 'data/shrub_species_totals.csv', row.names = F)
 
-
-grass = rbind(cover1, cover2) %>%
-  merge(splist) %>%
+# total grass cover by species
+grass = cover_spchanged %>%
+  merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
   dplyr::filter(form=='GRASS', category=='Cover') %>%
-  group_by(quadrat, project_year, year, month, species_code) %>%
-  summarize(totalarea = sum(area)) %>%
-  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
-# make species name changes
-grass$species = grass$newspeciescode
-grass$species[is.na(grass$species)] <- grass$species_code[is.na(grass$species)]
+  group_by(quadrat, project_year, year, month, species) %>%
+  summarize(totalarea = sum(area)) 
+
 grassfinal = dplyr::select(grass, quadrat, project_year, year, month, species, totalarea)
 write.csv(grassfinal, 'data/grass_species_totals.csv', row.names = F)
 
