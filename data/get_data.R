@@ -30,8 +30,8 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% d
 
 #  setup file ----
 # quadrats ready to use for analysis (skipped L3A --too close to L3)
-#    NEW: K4, L5, N2, N3, N3A, P3, P4, P5, T1, T2, T3
-#    SOON: K4, N1, N4, N5, N6, P1, P2, R1, R2, R3, R4
+#    NEW: K4, L5, N1, N2, N3, N3A, N4, N5, N6, P1, P2, P3, P4, P5, R1, R2, R3, R4, T1, T2, T3, T4
+#    Still species errors: N1, N3, N3A, N4, N5, N6, P1, P2, P3, P5, R1, R2, R3, R4, T2, T3
 quads = c('A1','A2','A3','A4','A5',
           'AR1','AR2','AR3','AR4','AR5','AR6',
           'B1','B2','B2A','B3','B4','B5',
@@ -39,17 +39,13 @@ quads = c('A1','A2','A3','A4','A5',
           'H1','H2','H3',
           'I1','I2','I3','I4','I5','I6','I7',
           'J1','J8','J9','J12','J22',
-          'K1','K2','K3',
-          'K4',
-          'L1','L2','L3','L4',
-          'L5',
+          'K1','K2','K3','K4',
+          'L1','L2','L3','L4','L5',
           'M5','M6',
-          'N2','N3','N3A',
-          'N1','N4','N5','N6',
-          'P1','P2',
-          'P3','P4','P5',
+          'N1','N2','N3','N3A','N4','N5','N6',
+          'P1','P2','P3','P4','P5',
           'R1','R2','R3','R4',
-          'T1','T2','T3',
+          'T1','T2','T3','T4',
           'T5','T6','T7','T8','T9','T10','T11',
           'U1','U2','U3','U4','U5',
           'V1','V2','V3','V4','V5','V6',
@@ -91,7 +87,8 @@ write.csv(shrubfinal, 'data/shrub_species_totals.csv', row.names = F)
 # total grass cover by species
 grass = cover_spchanged %>%
   merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
-  dplyr::filter(form=='GRASS', category=='Cover') %>%
+  dplyr::filter(form=='GRASS') %>%
+  #dplyr::filter(category=='Cover') %>%
   group_by(quadrat, project_year, year, month, species) %>%
   summarize(totalarea = sum(area)) 
 
