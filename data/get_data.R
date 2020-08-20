@@ -84,11 +84,11 @@ shrub = cover_spchanged %>%
 shrubfinal = dplyr::select(shrub, quadrat, project_year, year, month, species, totalarea)
 write.csv(shrubfinal, 'data/shrub_species_totals.csv', row.names = F)
 
-# total grass cover by species
+# total grass cover by species. remove Cyperus -- not technically a grass
 grass = cover_spchanged %>%
   merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
   dplyr::filter(form=='GRASS') %>%
-  #dplyr::filter(category=='Cover') %>%
+  dplyr::filter(species!='CYPER') %>%
   group_by(quadrat, project_year, year, month, species) %>%
   summarize(totalarea = sum(area)) 
 
