@@ -74,6 +74,12 @@ cover_spchanged = rbind(cover1, cover2) %>%
 cover_spchanged$species = cover_spchanged$newspeciescode
 cover_spchanged$species[is.na(cover_spchanged$species)] <- cover_spchanged$species_code[is.na(cover_spchanged$species)]
 
+count_spchanged = rbind(counts1, counts2) %>%
+  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
+count_spchanged$species = count_spchanged$newspeciescode
+count_spchanged$species[is.na(count_spchanged$species)] <- count_spchanged$species_code[is.na(count_spchanged$species)]
+
+
 # total shrub cover by species
 shrub = cover_spchanged %>%
   merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
@@ -112,8 +118,8 @@ totalgrass = grassfinal %>%
   merge(dates, all=T)
 totalgrass$total_grass[is.na(totalgrass$total_grass)] <- 0
 
-forb = rbind(counts1, counts2) %>%
-  merge(splist) %>%
+forb = count_spchanged %>%
+  merge(splist, by.x='species', by.y='species_code') %>%
   group_by(quadrat, project_year, year, month) %>%
   summarize(n_forbs=sum(count)) %>%
   merge(dates, all=T)
@@ -124,3 +130,19 @@ quadrat_veg = merge(totalshrub, totalgrass, all=T) %>%
   merge(forb, all=T)
 write.csv(quadrat_veg, 'data/quadrat_veg.csv', row.names=F)
 
+
+# ========================================
+# get total counts and cover of all perennial species
+
+counts = count_spchanged %>% 
+  mutate(cover = count*.000025) %>%
+  dplyr::select(quadrat, project_year, year, month, species, count, cover)
+covers = cover_spchanged %>%
+  mutate(count=rep(1)) %>%
+  dplyr::select(quadrat, project_year, year, month, species, count, cover=area)
+
+total_counts = rbind(counts, covers) %>%
+  group_by(quadrat, project_year, year, month, species) %>%
+  summarize(count = sum(count),
+            cover = sum(cover))
+write.csv(total_counts, 'data/all_species_counts_cover.csv', row.names = F)
