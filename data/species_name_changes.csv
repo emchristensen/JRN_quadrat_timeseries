@@ -2,23 +2,21 @@ originalName,oldspeciescode,newName,newspeciescode,
 Aristida pansa,ARPA9,Aristida spp.,ARIST,PerennialGrass
 Aristida purpurea,ARPU9,Aristida spp.,ARIST,PerennialGrass
 Aristida purpurea v. longiseta,ARPUL,Aristida spp.,ARIST,PerennialGrass
-Cyperus retroflexus,CYRE14,Cyperus spp.,CYPER,Perennial Grass
-Ephedra torreyana,EPTO,Ephedra spp.,EPHED,Shrub
-Ephedra trifurca,EPTR,Ephedra spp.,EPHED,Shrub
-Sporobolus nealleyi,SPNE,Muhlenbergia arenacea,MUAR,PerennialGrass
-Muhlenbergia torreyi,MUTO2,Muhlenbergia arenicola,MUAR2,PerennialGrass
-Sporobolus contractus,SPCO4,Sporobolus flexuosus,SPFL2,PerennialGrass
-Sporobolus cryptandrus,SPCR,Sporobolus flexuosus,SPFL2,PerennialGrass
 ,ARPU,,ARIST,
 ,ARPA9? ARPUL?,,ARIST,
 ,ARPA9? Or ARPU9,,ARIST,
+Cyperus retroflexus,CYRE14,Cyperus spp.,CYPER,Perennial Grass
 Dalea sp.,DALEA,Dalea nana,DANA,
+Ephedra torreyana,EPTO,Ephedra spp.,EPHED,Shrub
+Ephedra trifurca,EPTR,Ephedra spp.,EPHED,Shrub
 Eriogonum annuum,ERAN4,Eriogonum sp.,ERIOG,
 Eriogonum jamesii,ERJA,Eriogonum sp.,ERIOG,
 Eriogonum rotundifolium,ERRO2,Eriogonum sp.,ERIOG,
 Chamaesyce albomarginata,CHAL11,Euphorbia spp.,EUPHO,
 Chamaesyce serpyllifolia,CHSE6,Euphorbia spp.,EUPHO,
+,CHAL11?,,EUPHO,
 Gaillardia pinnatifida,GAPI,Gaillardia spp.,GAILL,
+,GUSA,,GUSA2,
 Hoffmannseggia drepanocarpa,HODR,Hoffmannseggia spp.,HOFFM,
 Hoffmannseggia glauca,HOGL2,Hoffmannseggia spp.,HOFFM,
 Ipomopsis longiflora,IPLO2,Ipomopsis spp.,IPOMO2,
@@ -27,6 +25,8 @@ Lesquerella purpurea,LEPU2,Lesquerella spp.,LESQU,
 Linum vernale,LIVE2,Linum australe,LIAU4,
 Machaeranthera pinnatifida,MAPI,Machaeranthera spp.,MACHA,
 Machaeranthera pinnatifida var. pinnatifida,MAPIP4,Machaeranthera spp.,MACHA,
+Sporobolus nealleyi,SPNE,Muhlenbergia arenacea,MUAR,PerennialGrass
+Muhlenbergia torreyi,MUTO2,Muhlenbergia arenicola,MUAR2,PerennialGrass
 Oenothera albicaulis,OEAL,Oenothera spp.,OENOT,
 Oenothera pallida,OEPA,Oenothera spp.,OENOT,
 Oenothera primiveris,OEPR,Oenothera spp.,OENOT,
@@ -35,6 +35,8 @@ Pectis papposa,PEPA2,Pectis spp.,PECTI,
 Portulaca oleracea,POOL,Portulaca spp.,PORTU,
 Sphaeralcea hastata,SPHA,Sphaeralcea spp.,SPHAE,
 Sphaeralcea incana,SPIN2,Sphaeralcea spp.,SPHAE,
+Sporobolus contractus,SPCO4,Sporobolus spp.,SPORO,PerennialGrass
+Sporobolus cryptandrus,SPCR,Sporobolus spp.,SPORO,PerennialGrass
+Sporobolus flexuosus,SPFL2,Sporobolus spp.,SPORO,
+Sporobolus airoides,SPAI,Sporobolus spp.,SPORO,
 Glandularia bipinnatifida,GLBI2,Unknown,UNKF,
-,GUSA,,GUSA2,
-,CHAL11?,,EUPHO,
