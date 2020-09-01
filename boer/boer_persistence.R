@@ -12,6 +12,10 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>%
 # quadrats to be used in analysis
 quads = unique(dates$quadrat)
 
+# timing of droughts
+drought = data.frame(name = c('1951-1956','2010-20012'),
+                     start=c(1950, 2009),
+                     end=c(1956, 2012))
 
 # just looking at BOER cover
 boer_data = dplyr::filter(grasstotals, species=='BOER4')
@@ -29,6 +33,9 @@ boer$totalarea[is.na(boer$totalarea)] <- 0
 quads_per_year = boer %>% group_by(project_year) %>%
   summarize(nquads = n_distinct(quadrat))
 
+# use same n for each project_year
+quads_per_year = boer %>% mutate(nquads = length(unique(boer$quadrat)))
+
 # how many quadrats had boer present in each project_year
 boer_quads_per_year = boer %>% 
   dplyr::filter(totalarea>0) %>%
@@ -41,12 +48,14 @@ boer_quads_per_year$project_year = as.numeric(boer_quads_per_year$project_year)
 
 # plot % of quads where boer present through time
 boer_presence = ggplot(boer_quads_per_year, aes(x=project_year, y=pct_boer)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
-  ylab('') +
+  ylab('% quadrats present') +
   ylim(0,1) +
-  ggtitle('Presence of BOER4') +
+  ggtitle('Presence of B. eriopoda') +
   theme_bw()
 boer_presence
 ggsave(filename='boer/boer_presence_timeseries.png', plot=boer_presence, width=5, height=4)
@@ -67,11 +76,13 @@ boer_avg_cover$project_year = as.numeric(boer_avg_cover$project_year)
 
 # plot avg cover over time
 boer_cover = ggplot(boer_avg_cover, aes(x=project_year, y=avgcover)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
   ylab('Area (m^2)') +
-  ggtitle('Avg. BOER4 cover per quadrat') +
+  ggtitle('B. eriopoda cover per quadrat') +
   theme_bw()
 boer_cover
 ggsave(filename='boer/boer_avg_cover_timeseries.png', plot=boer_cover, width=5, height=4)
@@ -84,7 +95,7 @@ soil = read.csv('../JRN_quadrat_datapaper/Soil/Jornada_quadrat_soil_PSA.csv', st
 
 
 # get avg shrub cover per quadrat post-1960
-shrub1960 = dplyr::filter(shrub, project_year>=1960) %>%
+shrub1960 = dplyr::filter(shrub, project_year>=1960, project_year<1995) %>%
   group_by(quadrat) %>%
   summarize(avg_shrub=mean(total_shrub))
 # separate shallow/deep soil samples
@@ -96,7 +107,7 @@ soildeep = dplyr::filter(soil, depth_layer=='deep') %>%
 
 # connect data
 boer_recovery = merge(boer_categories, shrub1960, by='quadrat', all.x=T) %>%
-  dplyr::filter(boer5years==1) %>%
+  dplyr::filter(boer5years==1, !is.na(boerlost1950s)) %>%
                       merge(soilshallow, all.x=T) %>%
   merge(soildeep, all.x=T) #%>%
   #dplyr::filter(lostbefore==0)
@@ -105,7 +116,7 @@ boer_recovery = merge(boer_categories, shrub1960, by='quadrat', all.x=T) %>%
 boer_recovery$category = rep(NA)
 boer_recovery$category[boer_recovery$boerlost1950s==1 & boer_recovery$boerpresent2==0] <- 'norecovery'
 boer_recovery$category[boer_recovery$boerlost1950s==1 & boer_recovery$boerpresent2==1] <- 'recolonized'
-
+boer_recovery$category[boer_recovery$boerlost1950s==0] <- 'remained'
 
 # plot category vs. shrub cover
 ggplot(boer_recovery, aes(x=category, y=avg_shrub)) +

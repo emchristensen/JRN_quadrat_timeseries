@@ -12,15 +12,19 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>%
 # quadrats to be used in analysis
 quads = unique(dates$quadrat)
 
+# timing of droughts
+drought = data.frame(name = c('1951-1956','2010-20012'),
+                     start=c(1950, 2009),
+                     end=c(1956, 2012))
 
 # just looking at ARIST cover
 arist_data = dplyr::filter(grasstotals, species=='ARIST')
 arist = arist_data %>%
   merge(dates, all.y=T) %>%
   merge(quadtype, all=T) %>%
-  #filter(quadrat %in% quads) %>%
-  #filter(quadrat %in% unique(boer_data$quadrat))
-  filter(quadrat %in% quads, upland_byspecies %in% c('upland',''))
+  filter(quadrat %in% quads) %>%
+  filter(quadrat %in% unique(arist_data$quadrat))
+  #filter(quadrat %in% quads, upland_byspecies %in% c('upland',''))
 
 # fill in 0s where cover is NA (date implies it was sampled, but no ARIST found)
 arist$totalarea[is.na(arist$totalarea)] <- 0
@@ -41,12 +45,14 @@ arist_quads_per_year$project_year = as.numeric(arist_quads_per_year$project_year
 
 # plot % of quads where boer present through time
 arist_presence = ggplot(arist_quads_per_year, aes(x=project_year, y=pct_arist)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
   ylab('') +
   ylim(0,1) +
-  ggtitle('Presence of ARIST') +
+  ggtitle('Presence of Aristida spp.') +
   theme_bw()
 arist_presence
 ggsave(filename='arist/arist_presence_timeseries.png', plot=arist_presence, width=5, height=4)
@@ -67,11 +73,13 @@ arist_avg_cover$project_year = as.numeric(arist_avg_cover$project_year)
 
 # plot avg cover over time
 arist_cover = ggplot(arist_avg_cover, aes(x=project_year, y=avgcover)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
   ylab('Area (m^2)') +
-  ggtitle('Avg. BOER4 cover per quadrat') +
+  ggtitle('Aristida spp. cover per quadrat') +
   theme_bw()
 arist_cover
 ggsave(filename='arist/arist_avg_cover_timeseries.png', plot=arist_cover, width=5, height=4)

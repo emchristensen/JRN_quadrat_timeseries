@@ -12,14 +12,18 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>%
 # quadrats to be used in analysis
 quads = unique(dates$quadrat)
 
+# timing of droughts
+drought = data.frame(name = c('1951-1956','2010-20012'),
+                     start=c(1950, 2009),
+                     end=c(1956, 2012))
 
 # just looking at SPFL cover
 spfl_data = dplyr::filter(grasstotals, species=='SPFL2')
 spfl = spfl_data %>%
   merge(dates, all.y=T) %>%
   merge(quadtype, all=T) %>%
-  #filter(quadrat %in% quads) %>%
-  #filter(quadrat %in% unique(boer_data$quadrat))
+  filter(quadrat %in% quads) %>%
+  filter(quadrat %in% unique(spfl_data$quadrat))
   filter(quadrat %in% quads, upland_byspecies %in% c('upland',''))
 
 # fill in 0s where cover is NA (date implies it was sampled, but no SPFL found)
@@ -41,12 +45,14 @@ spfl_quads_per_year$project_year = as.numeric(spfl_quads_per_year$project_year)
 
 # plot % of quads where spfl present through time
 spfl_presence = ggplot(spfl_quads_per_year, aes(x=project_year, y=pct_spfl)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
-  ylab('') +
+  ylab('% quadrats present') +
   ylim(0,1) +
-  ggtitle('Presence of SPFL2') +
+  ggtitle('Presence of S. flexuosus') +
   theme_bw()
 spfl_presence
 ggsave(filename='spfl/spfl_presence_timeseries.png', plot=spfl_presence, width=5, height=4)
@@ -60,6 +66,7 @@ write.csv(spfl_wide,'spfl/spfl_wide_format.csv', row.names=F)
 
 # average spfl cover per quadrat
 spfl_avg_cover = spfl %>%
+  dplyr::filter(quadrat != 'L1') %>%
   dplyr::filter(totalarea>0) %>%
   group_by(project_year) %>%
   summarize(avgcover=mean(totalarea))
@@ -67,11 +74,13 @@ spfl_avg_cover$project_year = as.numeric(spfl_avg_cover$project_year)
 
 # plot avg cover over time
 spfl_cover = ggplot(spfl_avg_cover, aes(x=project_year, y=avgcover)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
   ylab('Area (m^2)') +
-  ggtitle('Avg. SPFL2 cover per quadrat') +
+  ggtitle('S. flexuosus cover per quadrat') +
   theme_bw()
 spfl_cover
 ggsave(filename='spfl/spfl_avg_cover_timeseries.png', plot=spfl_cover, width=5, height=4)

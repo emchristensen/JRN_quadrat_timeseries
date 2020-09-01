@@ -12,15 +12,20 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>%
 # quadrats to be used in analysis
 quads = unique(dates$quadrat)
 
+# timing of droughts
+drought = data.frame(name = c('1951-1956','2010-20012'),
+                     start=c(1950, 2009),
+                     end=c(1956, 2012))
+
 
 # just looking at scbr cover
 scbr_data = dplyr::filter(grasstotals, species=='SCBR2')
 scbr = scbr_data %>%
   merge(dates, all.y=T) %>%
   merge(quadtype, all=T) %>%
-  #filter(quadrat %in% quads) %>%
-  #filter(quadrat %in% unique(boer_data$quadrat))
-  filter(quadrat %in% quads, upland_byspecies %in% c('lowland',''))
+  filter(quadrat %in% quads) #%>%
+  filter(quadrat %in% unique(boer_data$quadrat))
+  #filter(quadrat %in% quads, upland_byspecies %in% c('lowland',''))
 
 # fill in 0s where cover is NA (date implies it was sampled, but no scbr found)
 scbr$totalarea[is.na(scbr$totalarea)] <- 0
@@ -35,18 +40,20 @@ scbr_quads_per_year = scbr %>%
   group_by(project_year) %>%
   summarize(scbrquads = n_distinct(quadrat)) %>%
   merge(quads_per_year) %>%
-  mutate(pct_scbr = scbrquads/nquads) %>%
+  mutate(pct_scbr = scbrquads/nquads) #%>%
   dplyr::filter(nquads>=max(nquads)/2) # only take years where > 50% of quads were sampled
 scbr_quads_per_year$project_year = as.numeric(scbr_quads_per_year$project_year)
 
 # plot % of quads where scbr present through time
 scbr_presence = ggplot(scbr_quads_per_year, aes(x=project_year, y=pct_scbr)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
-  ylab('') +
+  ylab('% quadrats present') +
   ylim(0,1) +
-  ggtitle('Presence of scbr2') +
+  ggtitle('Presence of S. brevifolius') +
   theme_bw()
 scbr_presence
 ggsave(filename='scbr/scbr_presence_timeseries.png', plot=scbr_presence, width=5, height=4)
@@ -67,11 +74,13 @@ scbr_avg_cover$project_year = as.numeric(scbr_avg_cover$project_year)
 
 # plot avg cover over time
 scbr_cover = ggplot(scbr_avg_cover, aes(x=project_year, y=avgcover)) +
+  geom_rect(data=drought, aes(NULL,NULL,xmin=start, xmax=end),
+            ymin=0, ymax=20, fill='black',alpha=.2) +
   geom_point() +
   geom_line() +
   xlab('') +
   ylab('Area (m^2)') +
-  ggtitle('Avg. scbr3 cover per quadrat') +
+  ggtitle('S. brevifolius cover per quadrat') +
   theme_bw()
 scbr_cover
 ggsave(filename='scbr/scbr_avg_cover_timeseries.png', plot=scbr_cover, width=5, height=4)
