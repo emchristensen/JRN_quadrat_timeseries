@@ -59,12 +59,14 @@ covergrouped = merge(veg_data, groupedyears, by='project_year') %>%
   summarize(meangrass=mean(total_grass, na.rm=T),
             meanshrub=mean(total_shrub, na.rm=T))
 
+
+
 # now how many quads per year group
 quadsperyear2 = covergrouped %>%
   group_by(yeargroup) %>%
   summarize(nquads = n_distinct(quadrat))
 
-# only select the year (groups) that have at least 60 of the 69 quadrats sampled
+# only select the year (groups) that have at least 60 of the 90 quadrats sampled
 selectedyears = quadsperyear2$yeargroup[quadsperyear2$nquads>=60]
 
 # plot shrub and grass over time
@@ -130,6 +132,55 @@ cover_barplot <- ggplot(ncategory, aes(x=yeargroup, y=ncategory, fill=category))
   scale_fill_manual(values=cbPalette[c(1,2,5,3)])
 cover_barplot
 ggsave('Figures/Cover_barplot.png', plot=cover_barplot, width=5, height=3)
+
+# ===========================================
+# sensitivity analysis: create above graphs with only quadrats that were sampled regularly through time
+# see which quadrats have at least one sample in every 5-year period 
+covergroupedtally = covergrouped %>%
+  group_by(quadrat) %>%
+  summarize(nyeargroup=n_distinct(yeargroup))
+bestcoveredquads = covergroupedtally$quadrat[covergroupedtally$nyeargroup==max(covergroupedtally$nyeargroup)]
+
+# mean grass and shrub, dual axes
+meanbydate2 = dplyr::filter(covergrouped, quadrat %in% bestcoveredquads) %>%
+  group_by(yeargroup) %>%
+  summarize(meangrass=mean(meangrass),
+            meanshrub=mean(meanshrub))
+
+grassshrubtrend2 <- ggplot(meanbydate2, aes(x=yeargroup)) +
+  geom_line(aes(y=meangrass, colour='Grass')) +
+  geom_point(aes(y=meangrass, colour='Grass')) +
+  #scale_y_continuous(sec.axis = sec_axis(~.,name='Shrub Cover per Quadrat')) +
+  geom_line(aes(y=meanshrub, colour='Shrub')) +
+  geom_point(aes(y=meanshrub, colour='Shrub')) +
+  labs(x = '',
+       y='Cover per Quadrat (m^2)',
+       colour='Vegetation Type',
+       title='Mean Cover By Vegetation Type') +
+  theme_bw() +
+  scale_color_manual(values=cbPalette[2:3])
+grassshrubtrend2
+ggsave('Figures/grass_shrub_trend_40quadrats.png', plot=grassshrubtrend2, width=5, height=3)
+
+# what category do these 40 quadrats fall in over time
+# find how many of each category for each year
+ncategory2 = dominatedby %>% 
+  dplyr::filter(quadrat %in% bestcoveredquads) %>%
+  group_by(yeargroup, category) %>%
+  summarize(ncategory=length(category))
+
+
+# stacked barplot
+cover_barplot2 <- ggplot(ncategory2, aes(x=yeargroup, y=ncategory, fill=category)) +
+  geom_bar(stat='identity') +
+  theme_bw() +
+  labs(x='',
+       y="# of Quadrats",
+       fill='Cover Type',
+       title="Dominant Cover Type of Quadrats") +
+  scale_fill_manual(values=cbPalette[c(1,2,5,3)])
+cover_barplot2
+ggsave('Figures/Cover_barplot_40quadrats.png', plot=cover_barplot2, width=5, height=3)
 
 # ========================================================================
 # get into detail with grass-dominated quads 1995-2016
