@@ -5,6 +5,8 @@
 library(dplyr)
 library(ggplot2)
 
+source('data_functions.R')
+
 cbPalette <- c("#999999","#D55E00", "#0072B2","#E69F00", "#56B4E9", "#009E73", "#F0E442", "#CC79A7")
 
 veg = read.csv('data/quadrat_veg.csv', stringsAsFactors = F)
@@ -29,37 +31,12 @@ ggplot(veg_data, aes(x=project_year, y=total_grass, color=quadrat)) +
 ggplot(veg_data, aes(x=project_year, y=total_shrub, color=quadrat)) +
   geom_point()
 
-# =================
-# group years: quadrats were not all sampled every year, but I want to get a reliable time series
-groupedyears = data.frame(project_year = 1915:2016,
-                          yeargroup = c(rep(1917,5),
-                                        rep(1922,5),
-                                        rep(1927,5),
-                                        rep(1932,5),
-                                        rep(1937,5),
-                                        rep(1942,5),
-                                        rep(1947,5),
-                                        rep(1952,5),
-                                        rep(1957,5),
-                                        rep(1962,5),
-                                        rep(1967,5),
-                                        rep(1972,5),
-                                        rep(1977,5),
-                                        rep(1982,5),
-                                        rep(1987,5),
-                                        rep(1992,5),
-                                        rep(1995,5),
-                                        rep(2001,5),
-                                        rep(2006,5),
-                                        rep(2011,5),
-                                        rep(2016,2)))
 
-covergrouped = merge(veg_data, groupedyears, by='project_year') %>%
-  group_by(quadrat, yeargroup) %>%
-  summarize(meangrass=mean(total_grass, na.rm=T),
-            meanshrub=mean(total_shrub, na.rm=T))
+# aggregate grass and shrub to 5-year intervals
+grassgrouped = group_by_5yrs(veg_data, 'total_grass') %>% rename(meangrass=mean5year)
+shrubgrouped = group_by_5yrs(veg_data, 'total_shrub') %>% rename(meanshrub=mean5year)
 
-
+covergrouped = merge(grassgrouped, shrubgrouped, all=T)
 
 # now how many quads per year group
 quadsperyear2 = covergrouped %>%
