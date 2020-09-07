@@ -73,7 +73,14 @@ calculate_theil_sen = function(species_ts) {
 #' @param max_year numeric: maximum project year of analysis
 #' @param aggregate_5_year T/F: whether to aggregate data in 5-year intervals
 get_grass_ts = function(grassdata, dates_data, target_sp, min_year, max_year, aggregate_5_year) {
-  species_data = dplyr::filter(grassdata, species==target_sp, project_year>=min_year, project_year<=max_year)
+  if (target_sp == 'All') {
+    species_data = grassdata %>% 
+      dplyr::filter(project_year>=min_year, project_year<=max_year) %>%
+      group_by(quadrat, project_year, year, month) %>%
+      summarize(totalarea = sum(totalarea))
+  } else {
+    species_data = dplyr::filter(grassdata, species==target_sp, project_year>=min_year, project_year<=max_year)
+  }
   selecteddates = dplyr::filter(dates_data, project_year>=min_year, project_year<=max_year)
   species_ts = species_data %>%
     merge(selecteddates, all=T) %>%
