@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(trend)
 
-cbPalette <- c("#E69F00", "#56B4E9", "#999999","#CC79A7", "#0072B2",  "#D55E00","#009E73", "#F0E442")
+cbPalette <- c("#999999", "#E69F00", "#56B4E9","#CC79A7", "#0072B2",  "#D55E00","#009E73", "#F0E442")
 
 #' @description Not all quadrats were sampled every year. Aggregating into 5-year intervals smooths out the missing information 
 #' so timeseries can by analyzed
@@ -46,7 +46,9 @@ calculate_theil_sen = function(species_ts) {
     quaddat = species_ts %>% dplyr::filter(quadrat == quad) %>%
       arrange(year, month)
     sen = sens.slope(quaddat$totalarea)
+    #ken = kendallTrendTest(quaddat$totalarea)
     sp_slopes = rbind(sp_slopes, data.frame(quadrat=quad, slope=sen$estimates, pvalue=sen$p.value))
+     #                                       slope.k=ken$estimate[2], pvalue.k=ken$p.value))
   }
   # 
   # # get mean of all quads

@@ -59,62 +59,62 @@ dplyr::filter(grass, significant_05==2) %>% select(quadrat) %>% unique() %>% nro
 
 
 # perform trend analysis on grass species
-boer = grass_trend_analysis(grassdata2, dates, target_sp='BOER4', min_year=1995, max_year=2016, 
+boer = grass_trend_analysis(grassdata1, dates, target_sp='BOER4', min_year=1995, max_year=2016, 
                               save_figures=T, aggregate_5_year = F)
 length(unique(boer$quadrat))
 dplyr::filter(boer, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(boer, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-plmu = grass_trend_analysis(grassdata2, dates, target_sp='PLMU3', min_year=1995, max_year=2016, 
+plmu = grass_trend_analysis(grassdata1, dates, target_sp='PLMU3', min_year=1995, max_year=2016, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(plmu$quadrat))
 dplyr::filter(plmu, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(plmu, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
 
-sporo = grass_trend_analysis(grassdata2, dates, target_sp='SPORO', min_year=1995, max_year=2016, 
+sporo = grass_trend_analysis(grassdata1, dates, target_sp='SPORO', min_year=1995, max_year=2016, 
                                save_figures = T, aggregate_5_year=F)
 length(unique(sporo$quadrat))
 dplyr::filter(sporo, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(sporo, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-scbr = grass_trend_analysis(grassdata2, dates, target_sp='SCBR2', min_year=1995, max_year=2016, 
+scbr = grass_trend_analysis(grassdata1, dates, target_sp='SCBR2', min_year=1995, max_year=2016, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(scbr$quadrat))
 dplyr::filter(scbr, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(scbr, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-arist = grass_trend_analysis(grassdata2, dates, target_sp='ARIST', min_year=1995, max_year=2016, 
+arist = grass_trend_analysis(grassdata1, dates, target_sp='ARIST', min_year=1995, max_year=2016, 
                                save_figures = T, aggregate_5_year = F)
 length(unique(arist$quadrat))
 dplyr::filter(arist, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(arist, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-muar = grass_trend_analysis(grassdata, dates, target_sp='MUAR', min_year=1995, max_year=2016, 
+muar = grass_trend_analysis(grassdata1, dates, target_sp='MUAR', min_year=1995, max_year=2016, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(muar$quadrat))
 dplyr::filter(muar, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(muar, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-dapu = grass_trend_analysis(grassdata, dates, target_sp='DAPU7', min_year=1995, max_year=2016, 
+dapu = grass_trend_analysis(grassdata1, dates, target_sp='DAPU7', min_year=1995, max_year=2016, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(dapu$quadrat))
 dplyr::filter(dapu, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(dapu, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-# boute = grass_trend_analysis(grassdata, dates, target_sp='BOUTE', min_year=1995, max_year=2016, 
+#boute = grass_trend_analysis(grassdata1, dates, target_sp='BOUTE', min_year=1995, max_year=2016, 
 #                                save_figures = T)
 # length(unique(boute$quadrat))
 # dplyr::filter(boute, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 # dplyr::filter(boute, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-muar2 = grass_trend_analysis(grassdata, dates, target_sp='MUAR2', min_year=1995, max_year=2016, 
+muar2 = grass_trend_analysis(grassdata1, dates, target_sp='MUAR2', min_year=1995, max_year=2016, 
                                save_figures = T)
 length(unique(muar2$quadrat))
 dplyr::filter(muar2, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(muar2, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-paob = grass_trend_analysis(grassdata, dates, target_sp='PAOB', min_year=1995, max_year=2016, 
+paob = grass_trend_analysis(grassdata1, dates, target_sp='PAOB', min_year=1995, max_year=2016, 
                               save_figures = F)
 length(unique(paob$quadrat))
 dplyr::filter(paob, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
@@ -173,31 +173,31 @@ length(unique(arist50$quadrat))
 dplyr::filter(arist50, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(arist50, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-muar50 = grass_trend_analysis(grassdata, dates, target_sp='MUAR', min_year=1945, max_year=1956, 
+muar50 = grass_trend_analysis(grassdata2, dates, target_sp='MUAR', min_year=1945, max_year=1956, 
                          save_figures = T, aggregate_5_year = F)
 length(unique(muar50$quadrat))
 dplyr::filter(muar50, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(muar50, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-dapu50 = grass_trend_analysis(grassdata, dates, target_sp='DAPU7', min_year=1945, max_year=1956, 
+dapu50 = grass_trend_analysis(grassdata2, dates, target_sp='DAPU7', min_year=1945, max_year=1956, 
                          save_figures = T, aggregate_5_year = F)
 length(unique(dapu50$quadrat))
 dplyr::filter(dapu50, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(dapu50, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-boute50 = grass_trend_analysis(grassdata, dates, target_sp='BOUTE', min_year=1945, max_year=1956, 
+boute50 = grass_trend_analysis(grassdata2, dates, target_sp='BOUTE', min_year=1945, max_year=1956, 
                           save_figures = T)
 length(unique(boute50$quadrat))
 dplyr::filter(boute50, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(boute50, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-muar250 = grass_trend_analysis(grassdata, dates, target_sp='MUAR2', min_year=1945, max_year=1956, 
+muar250 = grass_trend_analysis(grassdata2, dates, target_sp='MUAR2', min_year=1945, max_year=1956, 
                           save_figures = T)
 length(unique(muar250$quadrat))
 dplyr::filter(muar250, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(muar250, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-paob50 = grass_trend_analysis(grassdata, dates, target_sp='PAOB', min_year=1945, max_year=1956, 
+paob50 = grass_trend_analysis(grassdata2, dates, target_sp='PAOB', min_year=1945, max_year=1956, 
                          save_figures = F)
 length(unique(paob50$quadrat))
 dplyr::filter(paob50, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
@@ -225,63 +225,72 @@ dplyr::filter(grass60, significant_05==2) %>% select(quadrat) %>% unique() %>% n
 
 
 # perform trend analysis on grass species
-boer60 = grass_trend_analysis(grassdata2, dates, target_sp='BOER4', min_year=1955, max_year=1980, 
+boer60 = grass_trend_analysis(grassdata3, dates, target_sp='BOER4', min_year=1955, max_year=1980, 
                               save_figures=T, aggregate_5_year = F)
 length(unique(boer60$quadrat))
 dplyr::filter(boer60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(boer60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-plmu60 = grass_trend_analysis(grassdata2, dates, target_sp='PLMU3', min_year=1955, max_year=1980, 
+plmu60 = grass_trend_analysis(grassdata3, dates, target_sp='PLMU3', min_year=1955, max_year=1980, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(plmu60$quadrat))
 dplyr::filter(plmu60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(plmu60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
 
-sporo60 = grass_trend_analysis(grassdata2, dates, target_sp='SPORO', min_year=1955, max_year=1980, 
+sporo60 = grass_trend_analysis(grassdata3, dates, target_sp='SPORO', min_year=1955, max_year=1980, 
                                save_figures = T, aggregate_5_year=F)
 length(unique(sporo60$quadrat))
 dplyr::filter(sporo60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(sporo60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-scbr60 = grass_trend_analysis(grassdata2, dates, target_sp='SCBR2', min_year=1955, max_year=1980, 
+scbr60 = grass_trend_analysis(grassdata3, dates, target_sp='SCBR2', min_year=1955, max_year=1980, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(scbr60$quadrat))
 dplyr::filter(scbr60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(scbr60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-arist60 = grass_trend_analysis(grassdata2, dates, target_sp='ARIST', min_year=1955, max_year=1980, 
+arist60 = grass_trend_analysis(grassdata3, dates, target_sp='ARIST', min_year=1955, max_year=1980, 
                                save_figures = T, aggregate_5_year = F)
 length(unique(arist60$quadrat))
 dplyr::filter(arist60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(arist60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-muar60 = grass_trend_analysis(grassdata, dates, target_sp='MUAR', min_year=1955, max_year=1980, 
+muar60 = grass_trend_analysis(grassdata3, dates, target_sp='MUAR', min_year=1955, max_year=1980, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(muar60$quadrat))
 dplyr::filter(muar60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(muar60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-dapu60 = grass_trend_analysis(grassdata, dates, target_sp='DAPU7', min_year=1955, max_year=1980, 
+dapu60 = grass_trend_analysis(grassdata3, dates, target_sp='DAPU7', min_year=1955, max_year=1980, 
                               save_figures = T, aggregate_5_year = F)
 length(unique(dapu60$quadrat))
 dplyr::filter(dapu60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(dapu60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-boute60 = grass_trend_analysis(grassdata, dates, target_sp='BOUTE', min_year=1955, max_year=1980, 
+boute60 = grass_trend_analysis(grassdata3, dates, target_sp='BOUTE', min_year=1955, max_year=1980, 
                                save_figures = T)
 length(unique(boute60$quadrat))
 dplyr::filter(boute60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(boute60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-muar260 = grass_trend_analysis(grassdata, dates, target_sp='MUAR2', min_year=1955, max_year=1980, 
+muar260 = grass_trend_analysis(grassdata3, dates, target_sp='MUAR2', min_year=1955, max_year=1980, 
                                save_figures = T)
 length(unique(muar260$quadrat))
 dplyr::filter(muar260, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(muar260, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
 
-paob60 = grass_trend_analysis(grassdata, dates, target_sp='PAOB', min_year=1955, max_year=1980, 
+paob60 = grass_trend_analysis(grassdata3, dates, target_sp='PAOB', min_year=1955, max_year=1980, 
                               save_figures = F)
 length(unique(paob60$quadrat))
 dplyr::filter(paob60, significant_05==1) %>% select(quadrat) %>% unique() %>% nrow()
 dplyr::filter(paob60, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow()
+
+# ==========================================================================
+# slopes ----
+# extract slope data from above results for use in logistic models
+slope_data = unique(dplyr::select(grass, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)) %>%
+  merge(unique(dplyr::select(grass60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(grass50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)), all=T)
+
+write.csv(slope_data, 'data/slopes_50_60_95.csv', row.names=F)
