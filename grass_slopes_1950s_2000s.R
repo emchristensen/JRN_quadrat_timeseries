@@ -293,4 +293,26 @@ slope_data = unique(dplyr::select(grass, quadrat, slope_95=slope, pvalue_95=pval
   merge(unique(dplyr::select(grass60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
   merge(unique(dplyr::select(grass50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)), all=T)
 
+# important species: BOER, SPORO, ARIST for 1950s; SPORO and DAPU7 in 1960s
+slope_boer = unique(dplyr::select(boer50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
+  merge(unique(dplyr::select(boer60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(boer, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
+
+slope_sporo = unique(dplyr::select(sporo50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
+  merge(unique(dplyr::select(sporo60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(sporo, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
+
+slope_arist = unique(dplyr::select(arist50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
+  merge(unique(dplyr::select(arist60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(arist, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
+
+slope_dapu = unique(dplyr::select(dapu50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
+  merge(unique(dplyr::select(dapu60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(dapu, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
+
+
 write.csv(slope_data, 'data/slopes_50_60_95.csv', row.names=F)
+write.csv(slope_boer, 'data/slopes_boer_50_60_95.csv', row.names=F)
+write.csv(slope_sporo, 'data/slopes_sporo_50_60_95.csv', row.names=F)
+write.csv(slope_arist, 'data/slopes_arist_50_60_95.csv', row.names=F)
+write.csv(slope_dapu, 'data/slopes_dapu_50_60_95.csv', row.names=F)
