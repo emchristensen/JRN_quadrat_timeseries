@@ -11,7 +11,7 @@
 #'     changed SPCO4 -> SPFL2
 #'     changed SPCR -> SPFL2
 #'     changed ARPA9, ARPU9, ARPUL -> ARIST
-#' last run: 9/1/20
+#' last run: 9/16/20
 
 library(dplyr)
 library(lubridate)
@@ -146,3 +146,4 @@ total_counts = rbind(counts, covers) %>%
   summarize(count = sum(count),
             cover = sum(cover))
 write.csv(total_counts, 'data/all_species_counts_cover.csv', row.names = F)
+
