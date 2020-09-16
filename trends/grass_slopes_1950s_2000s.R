@@ -14,8 +14,8 @@ library(trend)
 
 source('data_functions.R')
 
-grasstotals = read.csv('data/grass_species_totals.csv', stringsAsFactors = F)
-dates = read.csv('data/quadrats_dates_for_analysis.csv', stringsAsFactors = F)
+grasstotals = read.csv('../data/grass_species_totals.csv', stringsAsFactors = F)
+dates = read.csv('../data/quadrats_dates_for_analysis.csv', stringsAsFactors = F)
 #quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>%
 #  dplyr::select(quadrat, vegtype, upland_byspecies)
 
@@ -311,8 +311,8 @@ slope_dapu = unique(dplyr::select(dapu50, quadrat, slope_50=slope, pvalue_50=pva
   merge(unique(dplyr::select(dapu, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
 
 
-write.csv(slope_data, 'data/slopes_50_60_95.csv', row.names=F)
-write.csv(slope_boer, 'data/slopes_boer_50_60_95.csv', row.names=F)
-write.csv(slope_sporo, 'data/slopes_sporo_50_60_95.csv', row.names=F)
-write.csv(slope_arist, 'data/slopes_arist_50_60_95.csv', row.names=F)
-write.csv(slope_dapu, 'data/slopes_dapu_50_60_95.csv', row.names=F)
+write.csv(slope_data, '../data/slopes_50_60_95.csv', row.names=F)
+write.csv(slope_boer, '../data/slopes_boer_50_60_95.csv', row.names=F)
+write.csv(slope_sporo, '../data/slopes_sporo_50_60_95.csv', row.names=F)
+write.csv(slope_arist, '../data/slopes_arist_50_60_95.csv', row.names=F)
+write.csv(slope_dapu, '../data/slopes_dapu_50_60_95.csv', row.names=F)
