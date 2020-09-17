@@ -67,6 +67,29 @@ calculate_theil_sen = function(species_ts) {
   return(sp_slopes)
 }
 
+#' @description calculate linear model
+calculate_ols = function(species_ts) {
+  # calculate linear model slopes
+  sp_slopes = c()
+  # loop through the quadrats that have BOER
+  for (quad in unique(species_ts$quadrat)) {
+    quaddat = species_ts %>% dplyr::filter(quadrat == quad) %>%
+      arrange(year, month)
+    model1 = lm(totalarea ~ year, data=quaddat)
+    sp_slopes = rbind(sp_slopes, data.frame(quadrat=quad, slope=model1$coefficients[2], 
+                                            pvalue=summary(model1)$coefficients[2,4],
+                                            adjrsquared =summary(model1)$adj.r.squared))
+  }
+
+  # create column indicating whether slope is significant at .05 level, and direction of slope if so
+  sp_slopes$significant_05 = rep(0)
+  sp_slopes$significant_05[sp_slopes$pvalue<=.05 & sp_slopes$slope<0] <- 1
+  sp_slopes$significant_05[sp_slopes$pvalue<=.05 & sp_slopes$slope>0] <- 2
+  sp_slopes$significant_05 = as.factor(sp_slopes$significant_05)
+  
+  return(sp_slopes)
+}
+
 #' @description creates timeseries of selected grass species
 #' @param grassdata data frame containing all grass data
 #' @param dates_data data frame containing dates data
@@ -86,7 +109,7 @@ get_grass_ts = function(grassdata, dates_data, target_sp, min_year, max_year, ag
   selecteddates = dplyr::filter(dates_data, project_year>=min_year, project_year<=max_year)
   species_ts = species_data %>%
     merge(selecteddates, all=T) %>%
-    filter(quadrat %in% unique(species_data$quadrat))
+    filter(quadrat %in% unique(grassdata$quadrat))
   
   # fill in 0s where cover is NA (date implies it was sampled, but no target grass found)
   species_ts$totalarea[is.na(species_ts$totalarea)] <- 0
@@ -129,6 +152,35 @@ grass_trend_analysis = function(grassdata, dates_data, target_sp, min_year, max_
 
   return(species_ts_theil)
 }
+
+#' @description wrapper function that creates timeseries of grass, calculates OLS model, and creates plots
+#' @param grassdata data frame containing all grass data
+#' @param dates_data data frame containing dates data
+#' @param target_sp string: target grass species e.g. BOER4
+#' @param min_year numeric: minimum project year of analysis
+#' @param max_year numeric: maximum project year of analysis
+#' @param save_figures T/F: whether to create and save figures to file
+#' @param aggregate_5_year T/F: whether to aggregate data in 5-year intervals
+grass_trend_lm_analysis = function(grassdata, dates_data, target_sp, min_year, max_year,
+                                save_figures=F, aggregate_5_year=F) {
+  # get timeseries of grass
+  species_ts = get_grass_ts(grassdata, dates_data, target_sp, min_year, max_year, aggregate_5_year)
+  
+  # calculate OLS model
+  lm_slopes = calculate_ols(species_ts)
+  
+  #sp_slopes = calculate_theil_sen(species_ts)
+  #species_ts_theil = merge(species_ts, sp_slopes, by='quadrat', all.x=T)
+  species_ts_lm = merge(species_ts, lm_slopes, by='quadrat', all.x=T)
+  
+  # create and save figures
+  if (save_figures==T) {
+    plot_grass_trends(species_ts_lm, target_sp, min_year, max_year)
+  }
+  
+  return(species_ts_lm)
+}
+
 
 #' @description creates plots of grass trends and saves to file
 #' @param species_ts output of get_grass_ts and calculate_theil_sen
