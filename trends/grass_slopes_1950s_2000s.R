@@ -7,7 +7,7 @@
 #' 
 #' EMC 9/3/20
 #' Info on sens.slope: https://cran.r-project.org/web/packages/trend/vignettes/trend.pdf
-#' last run: 9/17/20
+#' last run: 9/24/20
 
 library(dplyr)
 library(ggplot2)
@@ -317,3 +317,4 @@ write.csv(slope_boer, 'data/slopes_boer_50_60_95.csv', row.names=F)
 write.csv(slope_sporo, 'data/slopes_sporo_50_60_95.csv', row.names=F)
 write.csv(slope_arist, 'data/slopes_arist_50_60_95.csv', row.names=F)
 write.csv(slope_dapu, 'data/slopes_dapu_50_60_95.csv', row.names=F)
+
