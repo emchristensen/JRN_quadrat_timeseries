@@ -24,6 +24,13 @@ soil$coarse_s = (soil$vcs_s + soil$cos_s)/100 * soil$sand_s/100 * 100
 soil$fine_deep = (soil$vfs_deep + soil$fs_deep)/100 * soil$sand_deep/100 * 100
 soil$fine_s = (soil$vfs_s + soil$fs_s)/100 * soil$sand_s/100 * 100
 
+# weighted avg of 2 sand layers
+soil$clay = soil$clay_deep*15/20 + soil$clay_s*5/20
+soil$sand = soil$sand_deep*15/20 + soil$sand_s*5/20
+soil$silt = soil$silt_deep*15/20 + soil$silt_s*5/20
+soil$coarse = soil$coarse_deep*15/20 + soil$coarse_s*5/20
+soil$fine = soil$fine_deep*15/20 + soil$fine_s*5/20
+
 # topography
 topo <- read.csv(paste0(datarepo,'SiteandMethods/Jornada_quadrat_topography.csv'), stringsAsFactors = F)
 # topo categories are ordered factors
@@ -56,10 +63,11 @@ soil_selected = dplyr::select(complete_soil, quadrat, clay_deep, clay_s, coarse_
                               fine_deep, fine_s, sand_deep, sand_s)
 cor(soil_selected[,-1])
 
+cor(complete_soil[,c('clay','sand','silt','coarse','fine')])
 
 # =======================================================
 # put together covariate table
-covariates = dplyr::select(soil, quadrat, clay_deep, clay_s, sand_deep, sand_s, coarse_deep, coarse_s, fine_deep, fine_s) %>%
+covariates = dplyr::select(soil, quadrat, clay, coarse, fine, clay_deep, clay_s, sand_deep, sand_s, coarse_deep, coarse_s, fine_deep, fine_s) %>%
   merge(landforms, by='quadrat', all=T) %>%
   merge(topo, by='quadrat', all=T) %>%
   merge(dplyr::select(shrub, quadrat, mean_shrub=mean), by='quadrat', all=T) %>%
