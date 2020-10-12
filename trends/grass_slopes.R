@@ -122,15 +122,15 @@ dplyr::filter(paob, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow
 
 
 
-# 1945-1955 ----
+# 1945-1956 ----
 # there are a selection of quadrats that were sampled poorly 1943-1960, so I will use
 #  a different set of quadrats for this analysis
 
-# quadrats that are not sampled at least once every 5 years 1945-1956; 
+# quadrats that are not sampled at least 5 times 1945-1956; 
 #   or are not sampled at least once in 1955 or 1956
 removequads = c('B5','K2','K4','L1','L5','M5','N5','N6','P2','P3','P5',
                 'T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11',
-                'V6','Y3','Y7')
+                'V6','Y1','Y2','Y3','Y7')
 grassdata2 = grassdata %>% dplyr::filter(!(quadrat %in% removequads))
 
 # perform trend analysis on total grass per quadrat
