@@ -1,4 +1,6 @@
 #' plot scatter of timing of shrub encroachment vs grass disappearance
+#' EMC 10/7/20
+
 library(ggplot2)
 
 dat = read.csv('trends/time_of_shrub_encroachment.csv', stringsAsFactors = F) %>%
