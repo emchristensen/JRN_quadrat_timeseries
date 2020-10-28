@@ -11,7 +11,7 @@
 #'     changed SPCO4 -> SPFL2
 #'     changed SPCR -> SPFL2
 #'     changed ARPA9, ARPU9, ARPUL -> ARIST
-#' last run: 9/24/20
+#' last run: 10/28/20
 
 library(dplyr)
 library(lubridate)
@@ -19,10 +19,7 @@ library(lubridate)
 # read in data
 datafolder = '../JRN_quadrat_datapaper/Plants/'
 cover1 = read.csv(paste0(datafolder, 'Jornada_quadrat_cover.csv'), stringsAsFactors = F)
-cover2 = read.csv(paste0(datafolder,'Jornada_quadrat_cover_new.csv'), stringsAsFactors = F)
-counts1 = read.csv(paste0(datafolder, 'Jornada_quadrat_forb_counts.csv'), stringsAsFactors = F)
-counts2 = read.csv(paste0(datafolder,'Jornada_quadrat_forb_counts_new.csv'), stringsAsFactors = F)
-dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates_20200803.csv'), stringsAsFactors = F)
+dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates.csv'), stringsAsFactors = F)
 splist = read.csv(paste0(datafolder, 'Jornada_quadrat_species_list_WIP.csv'), stringsAsFactors = F)
 spchanges = read.csv('data/species_name_changes.csv', stringsAsFactors = F)
 quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% dplyr::select(quadrat, vegtype, upland_byspecies)
@@ -69,12 +66,12 @@ write.csv(quaddates, 'data/quadrats_dates_for_analysis.csv', row.names = F)
 # calculate total cover by species ----
 
 # make species name changes
-cover_spchanged = rbind(cover1, cover2) %>%
+cover_spchanged = cover1 %>%
   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
 cover_spchanged$species = cover_spchanged$newspeciescode
 cover_spchanged$species[is.na(cover_spchanged$species)] <- cover_spchanged$species_code[is.na(cover_spchanged$species)]
 
-count_spchanged = rbind(counts1, counts2) %>%
+count_spchanged = counts1 %>%
   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
 count_spchanged$species = count_spchanged$newspeciescode
 count_spchanged$species[is.na(count_spchanged$species)] <- count_spchanged$species_code[is.na(count_spchanged$species)]
