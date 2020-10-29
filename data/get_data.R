@@ -19,6 +19,7 @@ library(lubridate)
 # read in data
 datafolder = '../JRN_quadrat_datapaper/Plants/'
 cover1 = read.csv(paste0(datafolder, 'Jornada_quadrat_cover.csv'), stringsAsFactors = F)
+counts1 = read.csv(paste0(datafolder, 'Jornada_quadrat_forb_counts.csv'), stringsAsFactors = F)
 dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates.csv'), stringsAsFactors = F)
 splist = read.csv(paste0(datafolder, 'Jornada_quadrat_species_list_WIP.csv'), stringsAsFactors = F)
 spchanges = read.csv('data/species_name_changes.csv', stringsAsFactors = F)
@@ -141,6 +142,9 @@ covers = cover_spchanged %>%
 total_counts = rbind(counts, covers) %>%
   group_by(quadrat, project_year, year, month, species) %>%
   summarize(count = sum(count),
-            cover = sum(cover))
+            cover = sum(cover)) %>%
+  merge(splist[,c('species_code','form','category')], by.x='species',by.y='species_code',all.x=T)
+
+
 write.csv(total_counts, 'data/all_species_counts_cover.csv', row.names = F)
 
