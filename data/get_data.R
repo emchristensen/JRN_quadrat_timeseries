@@ -11,7 +11,7 @@
 #'     changed SPCO4 -> SPFL2
 #'     changed SPCR -> SPFL2
 #'     changed ARPA9, ARPU9, ARPUL -> ARIST
-#' last run: 10/28/20
+#' last run: 11/19/20
 
 library(dplyr)
 library(lubridate)
