@@ -11,15 +11,16 @@
 #'     changed SPCO4 -> SPFL2
 #'     changed SPCR -> SPFL2
 #'     changed ARPA9, ARPU9, ARPUL -> ARIST
-#' last run: 11/19/20
+#' last run: 11/30/20
 
 library(dplyr)
 library(lubridate)
 
 # read in data
 datafolder = '../JRN_quadrat_datapaper/Plants/'
-cover1 = read.csv(paste0(datafolder, 'Jornada_quadrat_cover.csv'), stringsAsFactors = F)
-counts1 = read.csv(paste0(datafolder, 'Jornada_quadrat_forb_counts.csv'), stringsAsFactors = F)
+perennials = read.csv(paste0(datafolder, 'Jornada_quadrat_perennials.csv'), stringsAsFactors = F)
+#cover1 = read.csv(paste0(datafolder, 'Jornada_quadrat_cover.csv'), stringsAsFactors = F)
+#counts1 = read.csv(paste0(datafolder, 'Jornada_quadrat_forb_counts.csv'), stringsAsFactors = F)
 dates = read.csv(paste0(datafolder, 'dates/quadrat_sample_dates.csv'), stringsAsFactors = F)
 splist = read.csv(paste0(datafolder, 'Jornada_quadrat_species_list_WIP.csv'), stringsAsFactors = F)
 spchanges = read.csv('data/species_name_changes.csv', stringsAsFactors = F)
@@ -67,19 +68,23 @@ write.csv(quaddates, 'data/quadrats_dates_for_analysis.csv', row.names = F)
 # calculate total cover by species ----
 
 # make species name changes
-cover_spchanged = cover1 %>%
-  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
-cover_spchanged$species = cover_spchanged$newspeciescode
-cover_spchanged$species[is.na(cover_spchanged$species)] <- cover_spchanged$species_code[is.na(cover_spchanged$species)]
+# cover_spchanged = cover1 %>%
+#   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
+# cover_spchanged$species = cover_spchanged$newspeciescode
+# cover_spchanged$species[is.na(cover_spchanged$species)] <- cover_spchanged$species_code[is.na(cover_spchanged$species)]
+# 
+# count_spchanged = counts1 %>%
+#   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
+# count_spchanged$species = count_spchanged$newspeciescode
+# count_spchanged$species[is.na(count_spchanged$species)] <- count_spchanged$species_code[is.na(count_spchanged$species)]
 
-count_spchanged = counts1 %>%
+perenn_spchanged = perennials %>%
   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
-count_spchanged$species = count_spchanged$newspeciescode
-count_spchanged$species[is.na(count_spchanged$species)] <- count_spchanged$species_code[is.na(count_spchanged$species)]
-
+perenn_spchanged$species = perenn_spchanged$newspeciescode
+perenn_spchanged$species[is.na(perenn_spchanged$species)] <- perenn_spchanged$species_code[is.na(perenn_spchanged$species)]
 
 # total shrub cover by species
-shrub = cover_spchanged %>%
+shrub = perenn_spchanged %>%
   merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
   dplyr::filter(form=='SHRUB', !(species %in% c('YUBA','YUEL'))) %>%
   group_by(quadrat, project_year, year, month, species) %>%
@@ -89,7 +94,7 @@ shrubfinal = dplyr::select(shrub, quadrat, project_year, year, month, species, t
 write.csv(shrubfinal, 'data/shrub_species_totals.csv', row.names = F)
 
 # total grass cover by species. remove Cyperus -- not technically a grass
-grass = cover_spchanged %>%
+grass = perenn_spchanged %>%
   merge(splist, by.x='species', by.y='species_code', all.x=T) %>%
   dplyr::filter(form=='GRASS') %>%
   dplyr::filter(species!='CYPER') %>%
@@ -116,12 +121,12 @@ totalgrass = grassfinal %>%
   merge(dates, all=T)
 totalgrass$total_grass[is.na(totalgrass$total_grass)] <- 0
 
-forb = count_spchanged %>%
+forb = perenn_spchanged %>%
+  dplyr::filter(is.na(area)) %>%
   merge(splist, by.x='species', by.y='species_code') %>%
-  group_by(quadrat, project_year, year, month) %>%
-  summarize(n_forbs=sum(count)) %>%
+  count(quadrat, project_year, year, month) %>%
   merge(dates, all=T)
-forb$n_forbs[is.na(forb$n_forbs)] <- 0
+forb$n[is.na(forb$n)] <- 0
 
 # put data frame together and save to csv
 quadrat_veg = merge(totalshrub, totalgrass, all=T) %>%
@@ -132,18 +137,23 @@ write.csv(quadrat_veg, 'data/quadrat_veg.csv', row.names=F)
 # ========================================
 # get total counts and cover of all perennial species
 
-counts = count_spchanged %>% 
-  mutate(cover = count*.000025) %>%
-  dplyr::select(quadrat, project_year, year, month, species, count, cover)
-covers = cover_spchanged %>%
-  mutate(count=rep(1)) %>%
-  dplyr::select(quadrat, project_year, year, month, species, count, cover=area)
+# counts = perenn_spchanged %>% 
+#   mutate(cover = count*.000025) %>%
+#   dplyr::select(quadrat, project_year, year, month, species, count, cover)
+# covers = cover_spchanged %>%
+#   mutate(count=rep(1)) %>%
+#   dplyr::select(quadrat, project_year, year, month, species, count, cover=area)
 
-total_counts = rbind(counts, covers) %>%
+total_count_cover = perenn_spchanged %>%
+  mutate(count = rep(1))
+total_count_cover$area[is.na(total_count_cover$area)] <- .000025
+
+total_counts = total_count_cover %>%
   group_by(quadrat, project_year, year, month, species) %>%
   summarize(count = sum(count),
-            cover = sum(cover)) %>%
-  merge(splist[,c('species_code','form','category')], by.x='species',by.y='species_code',all.x=T)
+            cover = sum(area)) %>%
+  merge(splist[,c('species_code','form','category')], by.x='species',by.y='species_code',all.x=T) %>%
+  arrange(quadrat, year, month, species)
 
 
 write.csv(total_counts, 'data/all_species_counts_cover.csv', row.names = F)
