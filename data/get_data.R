@@ -30,7 +30,7 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% d
 #  setup file ----
 # quadrats ready to use for analysis (skipped L3A --too close to L3)
 #    NEW: K4, L5, N1, N2, N3, N3A, N4, N5, N6, P1, P2, P3, P4, P5, R1, R2, R3, R4, T1, T2, T3, T4
-#    Still species errors: N1, N3, N3A, N4, N5, N6, P1, P2, P3, P5, R1, R2, R3, R4, T2, T3
+#    Still maybe species errors: N1, N3, N3A, N4, N5, N6, P1, P2, P3, P5, R1, R2, R3, R4, T2, T3
 quads = c('A1','A2','A3','A4','A5',
           'AR1','AR2','AR3','AR4','AR5','AR6',
           'B1','B2','B2A','B3','B4','B5',
@@ -67,19 +67,10 @@ write.csv(quaddates, 'data/quadrats_dates_for_analysis.csv', row.names = F)
 
 # calculate total cover by species ----
 
-# make species name changes
-# cover_spchanged = cover1 %>%
-#   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
-# cover_spchanged$species = cover_spchanged$newspeciescode
-# cover_spchanged$species[is.na(cover_spchanged$species)] <- cover_spchanged$species_code[is.na(cover_spchanged$species)]
-# 
-# count_spchanged = counts1 %>%
-#   merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
-# count_spchanged$species = count_spchanged$newspeciescode
-# count_spchanged$species[is.na(count_spchanged$species)] <- count_spchanged$species_code[is.na(count_spchanged$species)]
-
+# make species name changes; restrict to just the quaddates from above
 perenn_spchanged = perennials %>%
-  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T)
+  merge(spchanges, by.x='species_code', by.y='oldspeciescode', all.x=T) %>%
+  merge(quaddates)
 perenn_spchanged$species = perenn_spchanged$newspeciescode
 perenn_spchanged$species[is.na(perenn_spchanged$species)] <- perenn_spchanged$species_code[is.na(perenn_spchanged$species)]
 
@@ -111,21 +102,21 @@ shrubfinal = read.csv('data/shrub_species_totals.csv', stringsAsFactors = F)
 totalshrub = shrubfinal %>%
   group_by(quadrat, project_year, year, month) %>%
   summarize(total_shrub = sum(totalarea)) %>%
-  merge(dates, all=T)
+  merge(quaddates, all=T)
 totalshrub$total_shrub[is.na(totalshrub$total_shrub)] <- 0
 
 grassfinal = read.csv('data/grass_species_totals.csv', stringsAsFactors = F)
 totalgrass = grassfinal %>%
   group_by(quadrat, project_year, year, month) %>%
   summarize(total_grass = sum(totalarea)) %>%
-  merge(dates, all=T)
+  merge(quaddates, all=T)
 totalgrass$total_grass[is.na(totalgrass$total_grass)] <- 0
 
 forb = perenn_spchanged %>%
   dplyr::filter(is.na(area)) %>%
   merge(splist, by.x='species', by.y='species_code') %>%
   count(quadrat, project_year, year, month) %>%
-  merge(dates, all=T)
+  merge(quaddates, all=T)
 forb$n[is.na(forb$n)] <- 0
 
 # put data frame together and save to csv
@@ -136,13 +127,6 @@ write.csv(quadrat_veg, 'data/quadrat_veg.csv', row.names=F)
 
 # ========================================
 # get total counts and cover of all perennial species
-
-# counts = perenn_spchanged %>% 
-#   mutate(cover = count*.000025) %>%
-#   dplyr::select(quadrat, project_year, year, month, species, count, cover)
-# covers = cover_spchanged %>%
-#   mutate(count=rep(1)) %>%
-#   dplyr::select(quadrat, project_year, year, month, species, count, cover=area)
 
 total_count_cover = perenn_spchanged %>%
   mutate(count = rep(1))
