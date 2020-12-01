@@ -8,6 +8,7 @@ Data files and code to create them.
 ### Veg data
 * __get_data.R__ File to create data files used for analysis. Depends on species_name_changes.csv (created manually). 
 * __all_species_counts_cover.csv__ Total area and number of individuals by species, quadrat, and sampling date. Contains only quadrats and dates from quadrats_dates_for_analysis.csv. 
+* __all_veg_count_crosstab.csv__ Wide-format table of number of individuals of species per quadrat and sampling time. 
 * __grass_species_totals.csv__ Total area of grass species by species, quadrat, and sampling date. Contains only quadrats and dates from quadrats_dates_for_analysis.csv. Cyperus sp. has been removed as it is not technically a grass. 
 * __quadrat_veg.csv__ total grass, total shrub, and total # of forb individuals per quadrat and times. Does not include Yucca or Cyperus species. 
 * __quadrats_dates_for_analysis.csv__ contains list of quadrats and dates used for the analyses. Only 91 quadrats are used, and for each quadrat I have selected one sampling per project_year (the latest sampling). 
