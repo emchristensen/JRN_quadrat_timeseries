@@ -142,3 +142,15 @@ total_counts = total_count_cover %>%
 
 write.csv(total_counts, 'data/all_species_counts_cover.csv', row.names = F)
 
+# ========================================
+# get crosstab of species
+
+allveg = read.csv('data/all_species_counts_cover.csv', stringsAsFactors = F)
+
+veg_crosstab = allveg %>%
+  arrange(species) %>%
+  tidyr::pivot_wider(id_cols=c(quadrat, project_year, year, month),
+                     names_from=species, values_from=count, values_fill=list(count=0)) %>%
+  arrange(quadrat, year, month)
+
+write.csv(veg_crosstab, 'data/all_veg_count_crosstab.csv', row.names=F)
