@@ -65,6 +65,15 @@ quaddates = dates %>% dplyr::filter(quadrat %in% quads) %>%
 # write to file
 write.csv(quaddates, 'data/quadrats_dates_for_analysis.csv', row.names = F)
 
+# get crosstab of years and quadrats
+quaddates_wide = quaddates %>% 
+  mutate(sampled = rep(1)) %>%
+  group_by(quadrat, project_year) %>%
+  summarize(samples=sum(sampled)) %>%
+  tidyr::pivot_wider(id_cols=quadrat, names_from=project_year, values_from=samples)
+
+write.csv(quaddates_wide, 'data/quadyearcrosstab.csv', row.names=F)
+
 # calculate total cover by species ----
 
 # make species name changes; restrict to just the quaddates from above
