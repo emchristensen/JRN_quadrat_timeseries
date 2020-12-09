@@ -1,6 +1,7 @@
 # overall grass/shrub trends 1916-2016
 # adapted from SRM poster analysis
 # EMC 8/26/20
+# last run: 12/10/20
 
 library(dplyr)
 library(ggplot2)
@@ -146,23 +147,46 @@ ggsave('Figures/Cover_barplot_40quadrats.png', plot=cover_barplot2, width=5, hei
 
 # ========================================================================
 # categorize each year of each quadrat (there are a lot of outliers. hard to understand this)
-# selected_veg = merge(veg, dates)
-# 
-# dominantcover = dplyr::select(selected_veg, quadrat, project_year, grass=total_grass,shrub=total_shrub) 
-# # categorize each chart
-# dominantcover$grassshrubratio = dominantcover$grass/dominantcover$shrub
-# dominantcover$category = NA
-# dominantcover$category[dominantcover$grass < .01 & dominantcover$shrub< .01] <- 'Bare' # <1% shrub and <1% grass
-# dominantcover$category[dominantcover$grass >=.01 & dominantcover$shrub< .01] <- 'Grass' # <1% shrub and >=1% grass
-# dominantcover$category[dominantcover$grass < .01 & dominantcover$shrub>=.01] <- 'Shrub' # >=1% shrub and <1% grass
-# dominantcover$category[dominantcover$grass >= .01 & dominantcover$shrub>=.01 & dominantcover$grassshrubratio >= 2] <- 'Grass' # >=1% grass and shrub but more than double the grass
-# dominantcover$category[dominantcover$grass >= .01 & dominantcover$shrub>=.01 & dominantcover$grassshrubratio <= .5] <- 'Shrub' # >=1% grass and shrub but more than double the shrub
-# #dominatedby$category[dominatedby$grass >= .01 & dominatedby$shrub>=.01 & dominatedby$grassshrubratio < 2 & dominatedby$grassshrubratio > .5] <- 'mixed'
-# dominantcover$category[is.na(dominantcover$category)] <- 'Mixed'
-# 
-# dominantcover$category = as.factor(dominantcover$category)
-# 
-# write.csv(dominantcover, 'trends/Quadrat_dominant_veg_type_yearly.csv', row.names=F)
+selected_veg = merge(veg, dates)
+
+dominantcover = dplyr::select(selected_veg, quadrat, project_year, grass=total_grass,shrub=total_shrub)
+# categorize each chart
+dominantcover$grassshrubratio = dominantcover$grass/dominantcover$shrub
+dominantcover$category = NA
+dominantcover$category[dominantcover$grass < .01 & dominantcover$shrub< .01] <- 'Bare' # <1% shrub and <1% grass
+dominantcover$category[dominantcover$grass >=.01 & dominantcover$shrub< .01] <- 'Grass' # <1% shrub and >=1% grass
+dominantcover$category[dominantcover$grass < .01 & dominantcover$shrub>=.01] <- 'Shrub' # >=1% shrub and <1% grass
+dominantcover$category[dominantcover$grass >= .01 & dominantcover$shrub>=.01 & dominantcover$grassshrubratio >= 2] <- 'Grass' # >=1% grass and shrub but more than double the grass
+dominantcover$category[dominantcover$grass >= .01 & dominantcover$shrub>=.01 & dominantcover$grassshrubratio <= .5] <- 'Shrub' # >=1% grass and shrub but more than double the shrub
+#dominatedby$category[dominatedby$grass >= .01 & dominatedby$shrub>=.01 & dominatedby$grassshrubratio < 2 & dominatedby$grassshrubratio > .5] <- 'mixed'
+dominantcover$category[is.na(dominantcover$category)] <- 'Mixed'
+
+dominantcover$category = as.factor(dominantcover$category)
+
+for (quad in unique(selected_veg$quadrat)) {
+  qdat = dplyr::filter(selected_veg, quadrat==quad)
+  
+  colorbars2 = dplyr::filter(dominantcover, quadrat==quad) %>%
+    mutate(xmin=project_year-.5,
+           xmax=project_year+.5,
+           ymin=rep(0),
+           ymax=rep(1))
+  coverplot = ggplot(qdat) +
+    geom_rect(data=colorbars2, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, fill=category), alpha=.3) +
+    geom_line(aes(x=project_year, y=total_grass, colour='Grass'), size=1.5) +
+    geom_line(aes(x=project_year, y=total_shrub, colour='Shrub'), size=1.5) +
+    labs(x = '',
+         y='Grass/Shrub Cover',
+         colour='Vegetation Type',
+         title=quad) +
+    theme_bw() +
+    scale_color_manual(values=cbPalette[c(7,3)]) +
+    scale_fill_manual(breaks=c('Bare','Grass','Mixed','Shrub'), values=cbPalette[c(1,7,5,3)])
+  coverplot
+  ggsave(plot=coverplot, filename = paste0('Figures/coverplots_yearly/',quad,'.png'), width=5, height=3)
+}
+
+write.csv(dominantcover, 'trends/Quadrat_dominant_veg_type_yearly.csv', row.names=F)
 
 
 # ====================================================================
