@@ -7,7 +7,7 @@
 #' 
 #' EMC 9/3/20
 #' Info on sens.slope: https://cran.r-project.org/web/packages/trend/vignettes/trend.pdf
-#' last run: 9/24/20
+#' last run: 12/10/20
 
 library(dplyr)
 library(ggplot2)
