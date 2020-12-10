@@ -28,7 +28,7 @@ quadtype = read.csv('data/quad_type_coordinate.csv', stringsAsFactors = F) %>% d
 
 
 #  setup file ----
-# quadrats ready to use for analysis (skipped L3A --too close to L3)
+# quadrats ready to use for analysis 
 #    NEW: K4, L5, N1, N2, N3, N3A, N4, N5, N6, P1, P2, P3, P4, P5, R1, R2, R3, R4, T1, T2, T3, T4
 #    Still maybe species errors: N1, N3, N3A, N4, N5, N6, P1, P2, P3, P5, R1, R2, R3, R4, T2, T3
 quads = c('A1','A2','A3','A4','A5',
@@ -39,7 +39,7 @@ quads = c('A1','A2','A3','A4','A5',
           'I1','I2','I3','I4','I5','I6','I7',
           'J1','J8','J9','J12','J22',
           'K1','K2','K3','K4',
-          'L1','L2','L3','L4','L5',
+          'L1','L2','L3','L3A','L4','L5',
           'M5','M6',
           'N1','N2','N3','N3A','N4','N5','N6',
           'P1','P2','P3','P4','P5',
@@ -70,6 +70,8 @@ quaddates_wide = quaddates %>%
   mutate(sampled = rep(1)) %>%
   group_by(quadrat, project_year) %>%
   summarize(samples=sum(sampled)) %>%
+  #ungroup() %>%
+  arrange(project_year) %>%
   tidyr::pivot_wider(id_cols=quadrat, names_from=project_year, values_from=samples)
 
 write.csv(quaddates_wide, 'data/quadyearcrosstab.csv', row.names=F)
