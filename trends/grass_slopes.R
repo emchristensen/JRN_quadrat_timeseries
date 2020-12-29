@@ -7,7 +7,7 @@
 #' 
 #' EMC 9/3/20
 #' Info on sens.slope: https://cran.r-project.org/web/packages/trend/vignettes/trend.pdf
-#' last run: 12/10/20
+#' last run: 12/28/20
 
 library(dplyr)
 library(ggplot2)
@@ -42,7 +42,7 @@ grass_species_totalcover = grassdata %>%
 # PLMU3, BOER4, SPORO, SCBR2, ARIST, MUAR, DAPU7, PAOB, MUAR2, BOUTE, MUPO2, SELE6, BOCU, PAHA, DICA8
 
 # Looks like I should look at the main 5 (ARIST, BOER4, SPORO, PLMU3, SCBR2) plus maybe
-#    DAPU7, BOUTE, MUAR, MUAR2, PAOB, PAHA, MUPO2, SELE6, ENDE
+#    DAPU7, BOUTE, MUAR, MUAR2, PAOB
 
 # ==========================================================
 
@@ -127,10 +127,10 @@ dplyr::filter(paob, significant_05==2) %>% select(quadrat) %>% unique() %>% nrow
 #  a different set of quadrats for this analysis
 
 # quadrats that are not sampled at least 5 times 1945-1956; 
-#   or are not sampled at least once in 1955 or 1956
-removequads = c('B5','K2','K4','L1','L5','M5','N5','N6','P2','P3','P5',
+#   or are not sampled at least once in 1955 or 1956 -- removed: K4, M5, N5, N6, P2, P5, V6
+removequads = c('B5','K2','L1','L5','P3',
                 'T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11',
-                'V6','Y1','Y2','Y3','Y7')
+                'Y1','Y2','Y3','Y7')
 grassdata2 = grassdata %>% dplyr::filter(!(quadrat %in% removequads))
 
 # perform trend analysis on total grass per quadrat
@@ -207,12 +207,16 @@ dplyr::filter(paob50, significant_05==2) %>% select(quadrat) %>% unique() %>% nr
 # there are a selection of quadrats that were sampled poorly, so I will use
 #  a different set of quadrats for this analysis
 
-# quadrats that are not sampled at least once every 5 years 1955-1980
-removequads2 = c('K1','K2','K4','L1','L2','L3A','L5','M5','M6',
-                'P1','P2','P3','P4','P5',
-                'T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11',
-                'V1','V2','V3','V4','V5','V6',
-                'Y1','Y2','Y3','Y7')
+# only use quadrats that don't have a 5+ year gap in data 1955-1980 and are sampled once 1976-79 
+# removequads2 = c('K1','K2','K4','L1','L2','L3A','L5','M5','M6',
+#                 'P1','P2','P3','P4','P5',
+#                 'T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11',
+#                 'V1','V2','V3','V4','V5','V6',
+#                 'Y1','Y2','Y3','Y7')
+# only use quads that have 6+ samples 1955-1980 and are sampled once 1977-1979 and once 1955-56
+removequads2 = c('K1','K2','K4','L1','L5',
+                 'N6','P3','P4','P5',
+                 'U4','V1','V4','Y2','Y3','Y7')
 
 grassdata3 = grassdata %>% dplyr::filter(!(quadrat %in% removequads2))
 
@@ -299,9 +303,17 @@ slope_boer = unique(dplyr::select(boer50, quadrat, slope_50=slope, pvalue_50=pva
   merge(unique(dplyr::select(boer60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
   merge(unique(dplyr::select(boer, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
 
+slope_plmu = unique(dplyr::select(plmu50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
+  merge(unique(dplyr::select(plmu60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(plmu, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
+
 slope_sporo = unique(dplyr::select(sporo50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
   merge(unique(dplyr::select(sporo60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
   merge(unique(dplyr::select(sporo, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
+
+slope_scbr = unique(dplyr::select(scbr50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
+  merge(unique(dplyr::select(scbr60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
+  merge(unique(dplyr::select(scbr, quadrat, slope_95=slope, pvalue_95=pvalue, significant_95=significant_05)), all=T)
 
 slope_arist = unique(dplyr::select(arist50, quadrat, slope_50=slope, pvalue_50=pvalue, significant_50=significant_05)) %>%
   merge(unique(dplyr::select(arist60, quadrat, slope_60=slope, pvalue_60=pvalue, significant_60=significant_05)), all=T) %>%
@@ -314,7 +326,9 @@ slope_dapu = unique(dplyr::select(dapu50, quadrat, slope_50=slope, pvalue_50=pva
 
 write.csv(slope_data, 'data/slopes_50_60_95.csv', row.names=F)
 write.csv(slope_boer, 'data/slopes_boer_50_60_95.csv', row.names=F)
+write.csv(slope_plmu, 'data/slopes_plmu_50_60_95.csv', row.names=F)
 write.csv(slope_sporo, 'data/slopes_sporo_50_60_95.csv', row.names=F)
+write.csv(slope_scbr, 'data/slopes_scbr_50_60_95.csv', row.names=F)
 write.csv(slope_arist, 'data/slopes_arist_50_60_95.csv', row.names=F)
 write.csv(slope_dapu, 'data/slopes_dapu_50_60_95.csv', row.names=F)
 

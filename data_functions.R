@@ -40,7 +40,7 @@ group_by_5yrs = function(veg_data, summary_col_name) {
 calculate_theil_sen = function(species_ts) {
   # calculate theil-sen slopes
   sp_slopes = c()
-  # loop through the quadrats that have BOER
+  # loop through the quadrats
   # the sens.slope function calculates the theil-sen slope, and the p-value is a kendall tau test
   for (quad in unique(species_ts$quadrat)) {
     quaddat = species_ts %>% dplyr::filter(quadrat == quad) %>%
@@ -50,18 +50,12 @@ calculate_theil_sen = function(species_ts) {
     sp_slopes = rbind(sp_slopes, data.frame(quadrat=quad, slope=sen$estimates, pvalue=sen$p.value))
      #                                       slope.k=ken$estimate[2], pvalue.k=ken$p.value))
   }
-  # 
-  # # get mean of all quads
-  # species_mean = species_ts %>%
-  #   group_by(project_year) %>%
-  #   summarize(mean_area=mean(totalarea))
-  # mean_sen = sens.slope(species_mean$mean_area)
-  # sp_slopes = rbind(sp_slopes, data.frame(quadrat='Mean', slope=mean_sen$estimates, pvalue=mean_sen$p.value))
-  # 
+
   # create column indicating whether slope is significant at .05 level, and direction of slope if so
   sp_slopes$significant_05 = rep(0)
   sp_slopes$significant_05[sp_slopes$pvalue<=.05 & sp_slopes$slope<0] <- 1
   sp_slopes$significant_05[sp_slopes$pvalue<=.05 & sp_slopes$slope>0] <- 2
+  sp_slopes$significant_05[is.na(sp_slopes$pvalue)] <- NA
   sp_slopes$significant_05 = as.factor(sp_slopes$significant_05)
   
   return(sp_slopes)
@@ -85,6 +79,7 @@ calculate_ols = function(species_ts) {
   sp_slopes$significant_05 = rep(0)
   sp_slopes$significant_05[sp_slopes$pvalue<=.05 & sp_slopes$slope<0] <- 1
   sp_slopes$significant_05[sp_slopes$pvalue<=.05 & sp_slopes$slope>0] <- 2
+  sp_slopes$significant_05[is.na(sp_slopes$pvalue)] <- NA
   sp_slopes$significant_05 = as.factor(sp_slopes$significant_05)
   
   return(sp_slopes)
