@@ -1,6 +1,8 @@
 # get covariates from data repository
 # EMC 8/20/20
 
+# last run: 12/28/20
+
 library(dplyr)
 
 # get covariates from Datapaper repo
@@ -38,11 +40,13 @@ topo$topo_local = as.factor(topo$topo_local)
 topo$topo_patch = as.factor(topo$topo_patch)
 
 # pasture
-pasture <- read.csv(paste0(datarepo,'SiteandMethods/Jornada_quadrat_pastures.csv'), stringsAsFactors = F)
+#pasture <- read.csv(paste0(datarepo,'SiteandMethods/Jornada_quadrat_pastures.csv'), stringsAsFactors = F)
 
 # Wenji's shrub layer
 shrub <- read.csv('shrub/quadrat_cover.csv', stringsAsFactors = F)
 
+# depth to caliche
+caliche <- read.csv(paste0(datarepo,'Soil/Jornada_quadrat_soil_petrocalcic_depth.csv'), stringsAsFactors = F)
 
 # ======================================================
 # look at covariates ----
@@ -71,6 +75,7 @@ covariates = dplyr::select(soil, quadrat, clay, coarse, fine, clay_deep, clay_s,
   merge(landforms, by='quadrat', all=T) %>%
   merge(topo, by='quadrat', all=T) %>%
   merge(dplyr::select(shrub, quadrat, mean_shrub=mean), by='quadrat', all=T) %>%
-  merge(dplyr::select(pasture, quadrat, Pasture_1995to2016), by='quadrat', all=T)
+  #merge(dplyr::select(pasture, quadrat, Pasture_1995to2016), by='quadrat', all=T) %>%
+  merge(caliche, by='quadrat', all.x=T)
 
 write.csv(covariates, 'data/covariates.csv', row.names=F)
