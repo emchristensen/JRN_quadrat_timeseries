@@ -1,4 +1,10 @@
-# get raw climate data and create monthly timeseries
+#' get raw climate data and create monthly timeseries
+#' Takes daily headquarters weather station data, aggregate to monthly. 
+#'  - If more than 7 precip values in a month are missing, fill with monthly PRISM values
+#'  - When aggregating to yearly, if more than 1 month NA discard yearly avg 
+#'  - summer = May-Sept
+#'  - winter = Oct-April
+#'  - VPD is from PRISM, precip and temp are from the weather station
 # EMC
 # last run: 1/4/21
 
@@ -47,18 +53,30 @@ yearlyppt$yearly_maxt[yearlyppt$yearly_maxt_nas>1] <- NA
 yearlyppt$yearly_mint[yearlyppt$yearly_mint_nas>1] <- NA
 
 summerppt = monthly %>%
-  dplyr::filter(month %in% c(6,7,8,9)) %>%
+  dplyr::filter(month %in% c(5,6,7,8,9)) %>%
   group_by(year) %>%
   summarize(summer_ppt_mm = sum(monthly_ppt_filled),
             summer_maxt = mean(monthly_maxt, na.rm=T), summer_maxt_nas = sum(is.na(monthly_maxt)),
             summer_vpd = mean(monthly_vpd))
 # if there is more than one entire month missing from summer temp, replace with NA (not a reliable avg)
-#   this only affects 4 values
+#   this only affects 5 values: 1918, 1921, 1929, 1932, 1937
 summerppt$summer_maxt[summerppt$summer_maxt_nas>1] <- NA
+
+winterppt = monthly %>%
+  dplyr::filter(month %in% c(1,2,3,4,10,11,12)) %>%
+  group_by(year) %>%
+  summarize(winter_ppt_mm = sum(monthly_ppt_filled),
+            winter_maxt = mean(monthly_maxt, na.rm=T), winter_maxt_nas = sum(is.na(monthly_maxt)),
+            winter_vpd = mean(monthly_vpd))
+# if there is more than one entire month missing from winter temp, replace with NA (not a reliable avg)
+#   this affects 8 values: 1917, 1921, 1929, 1931, 1932, 1933, 1937, 1948
+winterppt$winter_maxt[winterppt$winter_maxt_nas>1] <- NA
 
 # merge into one data frame
 climatesummary = merge(yearlyppt, summerppt) %>%
+  merge(winterppt) %>%
   dplyr::select(year, yearly_ppt_mm, yearly_maxt, yearly_mint, yearly_vpd, 
-                summer_ppt_mm, summer_maxt, summer_vpd)
+                summer_ppt_mm, summer_maxt, summer_vpd,
+                winter_ppt_mm, winter_maxt, winter_vpd)
 
 write.csv(climatesummary, 'climate/climate_variables.csv', row.names=F)
