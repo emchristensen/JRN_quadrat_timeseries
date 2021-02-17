@@ -1,7 +1,7 @@
 # overall grass/shrub trends 1916-2016
 # adapted from SRM poster analysis
 # EMC 8/26/20
-# last run: 12/10/20
+# last run: 2/17/21
 
 library(dplyr)
 library(ggplot2)
@@ -56,12 +56,39 @@ grassshrubtrend <- ggplot(meanbydate, aes(x=yeargroup)) +
        colour='Vegetation Type',
        title='Mean Cover By Vegetation Type') +
   theme_bw() +
-  scale_color_manual(values=cbPalette[c(7,3)])
+  scale_color_manual(values=cbPalette[c(6,5)])
 grassshrubtrend
   
 ggsave('Figures/grass_shrub_trend.png', plot=grassshrubtrend, width=5, height=3)
 
+# =======================================================================
+# grass shrub trend: yearly
 
+yearlygrass = veg_data %>%
+  group_by(project_year) %>%
+  summarize(mean_grass=mean(total_grass),
+            mean_shrub=mean(total_shrub),
+            sd_grass = sd(total_grass),
+            sd_shrub=sd(total_shrub),
+            nquads = n_distinct(quadrat)) 
+
+
+grassshrubtrend_yearly <- ggplot(veg_data[veg_data$project_year %in% yearlygrass$project_year,], aes(x=project_year)) +
+  geom_point(aes(y=total_grass, color='Grass'), alpha=.02) +
+  geom_point(aes(y=total_shrub, color='Shrub'), alpha=.02) +
+  geom_line(data=yearlygrass, aes(x=project_year, y=mean_grass, color='Grass')) +
+  geom_line(data=yearlygrass, aes(x=project_year, y=mean_shrub, color='Shrub')) +
+  #geom_errorbar(data=yearlygrass, aes(x=project_year, ymin=mean_grass-sd_grass, ymax=mean_grass+sd_grass)) +
+  scale_color_manual(values=cbPalette[c(6,5)]) +
+  labs(x='',
+       y='Cover per quadrat (m^2)',
+       color='Vegetation Type',
+       title='Mean Cover By Vegetation Type') +
+  ylim(0,.4) +
+  theme_bw()
+grassshrubtrend_yearly
+
+ggsave('Figures/grass_shrub_trend_yearly.png', plot=grassshrubtrend_yearly, width=5, height=3)
 
 # =======================================================================
 # number of grass-dominated quadrats through time
@@ -94,7 +121,7 @@ cover_barplot <- ggplot(ncategory, aes(x=yeargroup, y=ncategory, fill=category))
        y="# of Quadrats",
        fill='Cover Type',
        title="Dominant Cover Type of Quadrats") +
-  scale_fill_manual(values=cbPalette[c(1,7,5,3)])
+  scale_fill_manual(values=cbPalette[c(1,6,8,5)])
 cover_barplot
 ggsave('Figures/Cover_barplot.png', plot=cover_barplot, width=5, height=3)
 
@@ -122,7 +149,7 @@ grassshrubtrend2 <- ggplot(meanbydate2, aes(x=yeargroup)) +
        colour='Vegetation Type',
        title='Mean Cover By Vegetation Type') +
   theme_bw() +
-  scale_color_manual(values=cbPalette[c(7,3)])
+  scale_color_manual(values=cbPalette[c(6,5)])
 grassshrubtrend2
 ggsave('Figures/grass_shrub_trend_40quadrats.png', plot=grassshrubtrend2, width=5, height=3)
 
@@ -141,7 +168,7 @@ cover_barplot2 <- ggplot(ncategory2, aes(x=yeargroup, y=ncategory, fill=category
        y="# of Quadrats",
        fill='Cover Type',
        title="Dominant Cover Type of Quadrats") +
-  scale_fill_manual(values=cbPalette[c(1,7,5,3)])
+  scale_fill_manual(values=cbPalette[c(1,6,8,5)])
 cover_barplot2
 ggsave('Figures/Cover_barplot_40quadrats.png', plot=cover_barplot2, width=5, height=3)
 
