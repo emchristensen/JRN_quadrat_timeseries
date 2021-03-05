@@ -56,11 +56,11 @@ grassshrubtrend <- ggplot(meanbydate, aes(x=yeargroup)) +
        colour='Vegetation Type',
        title='Mean Cover By Vegetation Type') +
   theme_bw() +
-  scale_color_manual(values=cbPalette[c(6,5)])
+  scale_color_manual(values=cbPalette[c(6,7)])
 grassshrubtrend
   
 ggsave('Figures/grass_shrub_trend.png', plot=grassshrubtrend, width=5, height=3)
-
+write.csv(meanbydate, 'trends/grass_shrub_trends_5yearbins.csv', row.names=F)
 # =======================================================================
 # grass shrub trend: yearly
 
@@ -79,7 +79,7 @@ grassshrubtrend_yearly <- ggplot(veg_data[veg_data$project_year %in% yearlygrass
   geom_line(data=yearlygrass, aes(x=project_year, y=mean_grass, color='Grass')) +
   geom_line(data=yearlygrass, aes(x=project_year, y=mean_shrub, color='Shrub')) +
   #geom_errorbar(data=yearlygrass, aes(x=project_year, ymin=mean_grass-sd_grass, ymax=mean_grass+sd_grass)) +
-  scale_color_manual(values=cbPalette[c(6,5)]) +
+  scale_color_manual(values=cbPalette[c(7,6)]) +
   labs(x='',
        y='Cover per quadrat (m^2)',
        color='Vegetation Type',
@@ -121,7 +121,7 @@ cover_barplot <- ggplot(ncategory, aes(x=yeargroup, y=ncategory, fill=category))
        y="# of Quadrats",
        fill='Cover Type',
        title="Dominant Cover Type of Quadrats") +
-  scale_fill_manual(values=cbPalette[c(1,6,8,5)])
+  scale_fill_manual(values=cbPalette[c(1,7,5,6)])
 cover_barplot
 ggsave('Figures/Cover_barplot.png', plot=cover_barplot, width=5, height=3)
 
@@ -149,7 +149,7 @@ grassshrubtrend2 <- ggplot(meanbydate2, aes(x=yeargroup)) +
        colour='Vegetation Type',
        title='Mean Cover By Vegetation Type') +
   theme_bw() +
-  scale_color_manual(values=cbPalette[c(6,5)])
+  scale_color_manual(values=cbPalette[c(7,6)])
 grassshrubtrend2
 ggsave('Figures/grass_shrub_trend_40quadrats.png', plot=grassshrubtrend2, width=5, height=3)
 
@@ -168,7 +168,7 @@ cover_barplot2 <- ggplot(ncategory2, aes(x=yeargroup, y=ncategory, fill=category
        y="# of Quadrats",
        fill='Cover Type',
        title="Dominant Cover Type of Quadrats") +
-  scale_fill_manual(values=cbPalette[c(1,6,8,5)])
+  scale_fill_manual(values=cbPalette[c(1,7,5,6)])
 cover_barplot2
 ggsave('Figures/Cover_barplot_40quadrats.png', plot=cover_barplot2, width=5, height=3)
 
@@ -207,8 +207,8 @@ for (quad in unique(selected_veg$quadrat)) {
          colour='Vegetation Type',
          title=quad) +
     theme_bw() +
-    scale_color_manual(values=cbPalette[c(7,3)]) +
-    scale_fill_manual(breaks=c('Bare','Grass','Mixed','Shrub'), values=cbPalette[c(1,7,5,3)])
+    scale_color_manual(values=cbPalette[c(7,6)]) +
+    scale_fill_manual(breaks=c('Bare','Grass','Mixed','Shrub'), values=cbPalette[c(1,7,5,6)])
   coverplot
   ggsave(plot=coverplot, filename = paste0('Figures/coverplots_yearly/',quad,'.png'), width=5, height=3)
 }
