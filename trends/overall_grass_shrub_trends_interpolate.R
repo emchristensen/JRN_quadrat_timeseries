@@ -51,25 +51,27 @@ for (quad in ts_quads) {
     merge(selectedyears, all.y=T)
   
   # impute NAs
-  series_imputed = imputeTS::na_interpolation(quadseries, option='linear')
+  series_imputed = imputeTS::na_interpolation(quadseries, option='linear') %>%
+    mutate(quadrat=quad)
   
   # add to final frame
   all_imputed = rbind(all_imputed, series_imputed)
 }
 
+# get modern values and add to imputed values
+yearly_grass = veg_data %>% dplyr::filter(project_year >=1995, quadrat %in% ts_quads) %>%
+  dplyr::select(project_year, total_grass, total_shrub, quadrat) %>%
+  rbind(all_imputed) %>%
+  arrange(quadrat, project_year)
+
+# save imputed timeseries to file
+write.csv(yearly_grass, 'data/grass_shrub_timeseries_imputed.csv', row.names=F)
+
 # get yearly mean for plotting
-yearly_mean_grass_shrub = all_imputed %>%
+yearly_mean_grass_shrub = yearly_grass %>%
   group_by(project_year) %>%
   summarize(mean_grass=mean(total_grass),
             mean_shrub=mean(total_shrub))
-
-# get averages for 1995-2016
-yearly_mean_modern = veg_data %>% dplyr::filter(project_year >=1995, quadrat %in% ts_quads) %>%
-  group_by(project_year) %>%
-  summarize(mean_grass=mean(total_grass),
-            mean_shrub=mean(total_shrub))
-
-yearly_mean_grass_shrub = rbind(yearly_mean_grass_shrub, yearly_mean_modern)
 
 # Plot: mean grass and mean shrub cover per quadrat per 5-year interval
 grassshrubtrend <- ggplot(yearly_mean_grass_shrub, aes(x=project_year)) +
