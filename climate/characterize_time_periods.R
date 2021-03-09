@@ -11,6 +11,7 @@ library(lubridate)
 # ========================================================================
 # characterize time periods ----
 climatesummary = read.csv('climate/climate_variables.csv', stringsAsFactors = F)
+datarepo = '../JRN_quadrat_datapaper/'
 stocking = read.csv(paste0(datarepo,'SiteAndMethods/JERLivestockStockingRates.csv'), stringsAsFactors = F)
 
 # yearly precip

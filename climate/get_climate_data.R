@@ -3,10 +3,10 @@
 #'  - If more than 7 precip values in a month are missing, fill with monthly PRISM values
 #'  - When aggregating to yearly, if more than 1 month NA discard yearly avg 
 #'  - summer = May-Sept
-#'  - winter = Oct-April
+#'  - winter = Oct-April and belongs to the following year (Oct 1923-Apr 1924 is winter 1924)
 #'  - VPD is from PRISM, precip and temp are from the weather station
 # EMC
-# last run: 1/4/21
+# last run: 1/14/21
 
 library(dplyr)
 library(lubridate)
@@ -40,9 +40,15 @@ monthly = merge(monthlyppt, monthlyprism)
 monthly$monthly_ppt_filled = monthly$monthly_ppt_mm
 monthly$monthly_ppt_filled[monthly$monthly_ppt_nas>7] <- monthly$monthly_ppt_prism[monthly$monthly_ppt_nas>7]
 
+# create water_yr column so winter (Oct-Apr) ppt can be calculated
+monthly$water_yr = monthly$year
+monthly$water_yr[monthly$month %in% c(10,11,12)] <- monthly$year[monthly$month %in% c(10,11,12)] +1
+
+
+
 # aggregate by year and summer
 yearlyppt = monthly %>%
-  group_by(year) %>%
+  group_by(water_yr) %>%
   summarize(yearly_ppt_mm = sum(monthly_ppt_filled),
             yearly_maxt = mean(monthly_maxt, na.rm = T), yearly_maxt_nas = sum(is.na(monthly_maxt)),
             yearly_mint = mean(monthly_mint, na.rm = T), yearly_mint_nas = sum(is.na(monthly_mint)),
@@ -54,7 +60,7 @@ yearlyppt$yearly_mint[yearlyppt$yearly_mint_nas>1] <- NA
 
 summerppt = monthly %>%
   dplyr::filter(month %in% c(5,6,7,8,9)) %>%
-  group_by(year) %>%
+  group_by(water_yr) %>%
   summarize(summer_ppt_mm = sum(monthly_ppt_filled),
             summer_maxt = mean(monthly_maxt, na.rm=T), summer_maxt_nas = sum(is.na(monthly_maxt)),
             summer_vpd = mean(monthly_vpd))
@@ -64,7 +70,7 @@ summerppt$summer_maxt[summerppt$summer_maxt_nas>1] <- NA
 
 winterppt = monthly %>%
   dplyr::filter(month %in% c(1,2,3,4,10,11,12)) %>%
-  group_by(year) %>%
+  group_by(water_yr) %>%
   summarize(winter_ppt_mm = sum(monthly_ppt_filled),
             winter_maxt = mean(monthly_maxt, na.rm=T), winter_maxt_nas = sum(is.na(monthly_maxt)),
             winter_vpd = mean(monthly_vpd))
@@ -75,8 +81,29 @@ winterppt$winter_maxt[winterppt$winter_maxt_nas>1] <- NA
 # merge into one data frame
 climatesummary = merge(yearlyppt, summerppt) %>%
   merge(winterppt) %>%
-  dplyr::select(year, yearly_ppt_mm, yearly_maxt, yearly_mint, yearly_vpd, 
+  dplyr::select(water_yr, yearly_ppt_mm, yearly_maxt, yearly_mint, yearly_vpd, 
                 summer_ppt_mm, summer_maxt, summer_vpd,
                 winter_ppt_mm, winter_maxt, winter_vpd)
 
 write.csv(climatesummary, 'climate/climate_variables.csv', row.names=F)
+
+
+
+# ===================================================================
+# get monthly sums of past 6 months and 1 year
+monthlyppt$date = as.Date(paste(monthlyppt$year, monthlyppt$month, '15', sep='-'))
+monthlyppt = arrange(monthlyppt, date)
+
+ppt_6mo_yr = c()
+for (n in 12:nrow(monthlyppt)) {
+  selectedrows = monthlyppt[(n-11):n,]
+  if ((selectedrows$date[12]- selectedrows$date[1])>367) {
+    stop()
+  }
+  ppt_6mo_yr = rbind(ppt_6mo_yr, data.frame(year=selectedrows$year[12], 
+                                            month = selectedrows$month[12], 
+                                            ppt_6mo = sum(selectedrows$monthly_ppt_mm[7:12]),
+                                            ppt_yr = sum(selectedrows$monthly_ppt_mm)))
+}
+
+write.csv(ppt_6mo_yr, 'climate/ppt_6mo_year_sums.csv', row.names=F)
