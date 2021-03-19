@@ -15,11 +15,15 @@ veg = read.csv('data/quadrat_veg.csv', stringsAsFactors = F)
 # get avg quadrat shrub cover 2006-2016
 veg_2006 = dplyr::filter(veg, project_year>=2006) %>%
   group_by(quadrat) %>%
-  summarize(avg_shrub = mean(total_shrub))
+  summarize(avg_shrub = mean(total_shrub),
+            avg_grass = mean(total_grass),
+            max_grass = max(total_grass))
 
 # merge with remote sense
 shrub_combined = merge(shrub, veg_2006, by='quadrat')
 
+
+# ---------------
 # linear model
 quadlm = lm(mean ~ avg_shrub-1, data=shrub_combined)
 summary(quadlm)
@@ -83,3 +87,21 @@ DK_quad
 ggsave('Figures/shrub_compare_dk_quadrat.png', plot=DK_quad, width=4, height=3)
 
 # not great!
+
+# ============================================
+# How does remotely sensed shrub neigborhood correlate to grass cover?
+
+# linear model
+quadlm_grass = lm(mean ~ max_grass-1, data=shrub_combined)
+summary(quadlm_grass)
+
+# plot quad cover vs remote sensing
+grass_remote = ggplot(shrub_combined, aes(x=max_grass, y=mean)) +
+  geom_point() +
+  xlab('quadrat grass cover') +
+  ylab('remote-sensing shrub cover') +
+  #geom_abline(aes(slope=quadlm_grass$coefficients[1], intercept=0)) +
+  xlim(0,1) +
+  ylim(0,1)
+grass_remote
+ggsave('Figures/remote_shrub_vs_grass_2006_2016.png', plot=grass_remote, width=4, height=3)
