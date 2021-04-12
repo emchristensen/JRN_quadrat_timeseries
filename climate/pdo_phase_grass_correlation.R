@@ -34,12 +34,18 @@ quads31 = dplyr::filter(veg, quadrat %in% early_imputed$quadrat) %>%
             nquads = n_distinct(quadrat)) %>%
   merge(phases, by.x='project_year',by.y='year')
 
+# plot timeseries
 pdo_grass_plot = ggplot(quads31, aes(x=project_year, y=mean_grass)) +
   geom_line() +
   geom_point(aes(color=pdo_phase)) +
+  #geom_line(aes(y=mean_shrub)) +
   xlab('') +
   ylab('Mean grass cover per m^2') +
   ggtitle('Perennial grass cover by PDO phase') +
   theme_bw()
 pdo_grass_plot
 ggsave('Figures/climate/grass_by_pdo_phase_31quads.png', plot=pdo_grass_plot, width=5, height=3)
+
+write.csv(quads31, 'climate/grass_by_pdo_phase_31quadrats.csv', row.names=F)
+# test for differences
+
