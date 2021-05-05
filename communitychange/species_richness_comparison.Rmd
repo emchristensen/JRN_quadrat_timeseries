@@ -1,0 +1,132 @@
+---
+title: "species richness comparison"
+author: "Erica Christensen"
+date: "4/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#library(dplyr)
+#library(ggplot2)
+library(tidyverse)
+library(broom)
+
+# colors for figures
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+# read data (written in species_richnes_difference.R)
+richness_comparison = read.csv('richness_comparison_1928_2016.csv')
+
+```
+
+## Data
+
+The question is how did species richness change between 1928 and 2016. I am using 74 quadrats that were no shrub or sparse shrub in 1928, and comparing species richness on the same quadrats in 2016. Of the 74, 22 quadrats were medium/high shrub encroached by 2016 (according to the remote sensed shrub map produced by Wenji) and 52 remained low-shrub. 
+
+First of all, is the change in richness per quadrat between 1928 and 2016 significantly different from 0?
+
+```{r cars, echo=F}
+head(dplyr::select(richness_comparison, quadrat, richness_1928, richness_2016, sprich_change, shrubland))
+
+# test whether the data are normally distributed
+shapiro.test(richness_comparison$sprich_change)
+
+# perform one-sample t-test: different from 0?
+res <- t.test(richness_comparison$sprich_change, mu=0)
+res
+
+```
+
+The test indicates that the difference is significantly different from zero, and on average each quadrat lost 1.05 species.
+
+## Shrub encroached vs. not encroached
+Plot the data by shrub-encroached or not-shrub-encroached:
+
+```{r boxplor, echo=F}
+# how many in each category
+table(richness_comparison$shrubland)
+
+# boxplot: richness comparing 1928 to 2016 and transitioned to shrub/ did not transition to shrub
+box_richness_shrubtransition = ggplot(richness_comparison, aes(x=shrubland, y=sprich_change, group=shrubland, color=as.factor(shrubland))) +
+  scale_color_manual(values=cbPalette[c(2,6)]) +
+  geom_boxplot() +
+  geom_jitter(width=.1, height=.1, alpha=.1) +
+  ylab('# species gained/lost') +
+  xlab('') +
+  guides(color=F) +
+  #labs(color='Transition\ntype') +
+  scale_x_discrete(labels=c('not shrub\n encroached','shrub\n encroached')) +
+  ggtitle('Species richness change: 1928 to 2016') +
+  theme_bw()
+box_richness_shrubtransition
+#ggsave(box_richness_shrubtransition, filename='Figures/richness/species_richness_comparison_1928_2016.png', width=4, height=3)
+```
+
+The boxplot of the data suggests that quadrats in shrub-encroached areas lost more species. 
+
+```{r avg loss, echo=F}
+# what are the average values in 2016 and 1928?
+richness_comparison %>%
+  group_by(shrubland) %>%
+  summarize(mean=mean(sprich_change),
+            sd=sd(sprich_change))
+```
+
+T-test:
+
+```{r ttest, echo=F}
+sprich.lm = lm(sprich_change ~ shrubland, data=richness_comparison)
+summary(sprich.lm)
+
+# Augment model with the data
+sprich.res = augment(sprich.lm, richness_comparison)
+
+# Residual plot colored by shrubland
+ggplot(sprich.res, aes(x = .fitted, y = .resid, col = shrubland)) +
+  geom_jitter(width=.05) +
+  geom_hline(yintercept = 0)
+ 
+# Histogram of residuals
+ggplot(sprich.res, aes(x = .resid)) +
+  geom_histogram(fill = 'steelblue', color = 'black')
+```
+
+## Site-wide species richness
+Did the average loss of 1 species per quadrat translate to site-wide species richness loss?
+
+```{r site richness, echo=F}
+# read data files and proces data
+veg_selected_noblank = read.csv('../data/all_species_counts_cover.csv', stringsAsFactors = F)
+dates = read.csv('../data/quadrats_dates_for_analysis.csv', stringsAsFactors = F)
+splist = read.csv('../../JRN_quadrat_datapaper/Plants/Jornada_quadrat_species_list.csv', stringsAsFactors = F)
+
+usedspecies = splist %>% dplyr::filter(species_code %in% veg_selected_noblank$species)
+# just "known" species -- includes codes identified to genus (e.g. SPORO) but not total unknowns (e.g. UNKPG)
+knownspecies = usedspecies %>% dplyr::filter(species !='')
+
+# remove unknowns, shrub and subshrub species
+veg_selected_noblank_noshrub = dplyr::filter(veg_selected_noblank, !form %in% c('SHRUB','S-SHR'), species %in% knownspecies$species_code)
+
+# combine veg with dates so blank quadrats will be included
+veg_selected_noshrub = veg_selected_noblank_noshrub %>%
+  mutate(present = rep(1)) %>%
+  merge(dates, all=T)
+
+# how many species at site level on the 86 quadrats that were measured in 1928 and 2016
+site_richness_1928 = veg_selected_noshrub %>%
+  dplyr::filter(project_year==1928, quadrat %in% richness_comparison$quadrat) %>%
+  dplyr::select(species, form, category) %>%
+  unique() %>%
+  dplyr::filter(!is.na(species))
+print(paste('# species in 1928:',length(site_richness_1928$species)))
+# 31 species: 12 grass and 19 forb
+
+site_richness_2016 = veg_selected_noshrub %>%
+  dplyr::filter(project_year==2016, quadrat %in% richness_comparison$quadrat) %>%
+  dplyr::select(species, form, category) %>%
+  unique() %>%
+  dplyr::filter(!is.na(species))
+print(paste('# species in 2016:',length(site_richness_2016$species)))
+# 26 species: 11 grass and 15 forb
+
+```

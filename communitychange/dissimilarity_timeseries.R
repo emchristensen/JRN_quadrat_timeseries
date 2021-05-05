@@ -6,15 +6,28 @@ library(ggplot2)
 library(vegan)
 
 # read in veg data and remove unknowns
-veg = read.csv('data/all_species_counts_cover.csv', stringsAsFactors = F) %>%
-  dplyr::filter(!(species %in% c('UNKCA','UNKF','UNKG','UNKN','UNKP','UNKP1','UNKP2','UNKP3','UNKPF','UNKPF1',
-                                 'UNKPF2','UNKPF3','UNKPG')))
-veg$date = as.Date(paste(veg$year, veg$month, '15',sep='-'))
+veg_noblank = read.csv('data/all_species_counts_cover.csv', stringsAsFactors = F) 
+dates = read.csv('data/quadrats_dates_for_analysis.csv', stringsAsFactors = F)
+# merge with dates to get only one sample per quadrat per year
+veg_selected_noblank = merge(dates, veg_noblank)
+# merge with dates so empty quadrats are included
+veg = merge(dates, veg_noblank, all.x=T)
 
+# get species list and remove unknowns, keeping genus-only codes
+splist = read.csv('../JRN_quadrat_datapaper/Plants/Jornada_quadrat_species_list_WIP.csv', stringsAsFactors = F)
+knownspecies = splist %>%
+  dplyr::filter(!is.na(species), species !='', habit !='A')
+
+# data frame to use: no blank charts included, only known species, only one chart per quad per year
+veg_nounkn = dplyr::filter(veg_selected_noblank, species %in% c(knownspecies$species_code, NA)) %>%
+  dplyr::select(-form, -category, -day)
+veg_nounkn$date = as.Date(paste(veg_nounkn$year, veg_nounkn$month, '15',sep='-')) 
+
+# ==============================================
 # create wide data frame
-quaddat = dplyr::filter(veg, quadrat=='I2') %>% 
-  dplyr::select(-cover) %>%
-  tidyr::pivot_wider(names_from=species, values_from=count)
+quaddat = dplyr::filter(veg_nounkn, quadrat=='A1') %>% 
+  dplyr::select(-count) %>%
+  tidyr::pivot_wider(names_from=species, values_from=cover)
 # fill in missing with zeros
 quaddat[is.na(quaddat)] <- 0
 
