@@ -97,7 +97,7 @@ write.csv(yearly_mean_grass_shrub, 'trends/grass_shrub_trends_yearly.csv', row.n
 yearly_grass = read.csv('data/grass_shrub_timeseries_imputed.csv')
 
 # one quadrat at a time
-quad = 'A1'
+#quad = 'A1'
 for (quad in unique(yearly_grass$quadrat)) {
   quadratgrass = dplyr::filter(yearly_grass, quadrat==quad)
   subplot = ggplot(quadratgrass, aes(x=project_year, y=total_grass)) +

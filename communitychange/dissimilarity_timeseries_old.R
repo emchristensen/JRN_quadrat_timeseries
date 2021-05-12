@@ -5,64 +5,39 @@ library(dplyr)
 library(ggplot2)
 library(vegan)
 
-veg_herbaceous = read.csv('communitychange/veg_herbaceous_all.csv')
-richness = read.csv('communitychange/richness_comparison_1928_2016.csv')
+# read in veg data and remove unknowns
+veg_noblank = read.csv('data/all_species_counts_cover.csv', stringsAsFactors = F) 
+dates = read.csv('data/quadrats_dates_for_analysis.csv', stringsAsFactors = F)
+# merge with dates to get only one sample per quadrat per year
+veg_selected_noblank = merge(dates, veg_noblank)
+# merge with dates so empty quadrats are included
+veg = merge(dates, veg_noblank, all.x=T)
 
+# get species list and remove unknowns, keeping genus-only codes
+splist = read.csv('../JRN_quadrat_datapaper/Plants/Jornada_quadrat_species_list_WIP.csv', stringsAsFactors = F)
+knownspecies = splist %>%
+  dplyr::filter(!is.na(species), species !='', habit !='A')
+
+# data frame to use: no blank charts included, only known species, only one chart per quad per year
+veg_nounkn = dplyr::filter(veg_selected_noblank, species %in% c(knownspecies$species_code, NA)) %>%
+  dplyr::select(-form, -category, -day)
+veg_nounkn$date = as.Date(paste(veg_nounkn$year, veg_nounkn$month, '15',sep='-')) 
 
 # ==============================================
-# get average distance in 1928 and 2016
-
 # create wide data frame
-quaddat = dplyr::filter(veg_herbaceous, quadrat %in% richness$quadrat) %>% 
-  dplyr::select(-cover, -year, -month, -day, -form, -category, -present) %>%
-  tidyr::pivot_wider(names_from=species, values_from=count)
+quaddat = dplyr::filter(veg_nounkn, quadrat=='A1') %>% 
+  dplyr::select(-count) %>%
+  tidyr::pivot_wider(names_from=species, values_from=cover)
 # fill in missing with zeros
 quaddat[is.na(quaddat)] <- 0
 
-# get samples from 1928
-quaddat1928 = dplyr::filter(quaddat, project_year %in% c(1928)) 
-# remove columns that are zeros
-quaddat1928 = quaddat1928[, colSums(quaddat1928 != 0) >0]
-# remove rows that are all zeros
-quaddat1928_nozeros = quaddat1928[rowSums(quaddat1928[,-c(1,2)])>0,]
-quaddat1928_zeros = quaddat1928[rowSums(quaddat1928[,-c(1,2)])==0,]
+# get baseline: first 5 years avg
+baseline = quaddat %>%
+  slice(1:5) %>%
+  dplyr::select(-quadrat, -project_year, -year, -month, -date) %>%
+  colMeans()
 
-# mean pairwise distance in 1928
-dist1928 = vegdist(quaddat1928_nozeros[,-c(1,2)], method = 'jaccard') %>% mean()
-
-# get samples from 2016
-quaddat2016 = dplyr::filter(quaddat, project_year %in% c(2016))
-quaddat2016 = quaddat2016[, colSums(quaddat2016 != 0) >0]
-quaddat2016_nozeros = quaddat2016[rowSums(quaddat2016[,-c(1,2)])>0,]
-
-# mean pairwise distance in 2016
-dist2016 = vegdist(quaddat2016_nozeros[,-c(1,2)], method='jaccard') %>% mean()
-
-# ==============================================
-# nmds plot 
-nmdsdat = dplyr::select(quaddat2016_nozeros, -quadrat, -project_year)
-
-
-
-nmdsdat[nmdsdat>0] <- 1
-
-nmds = metaMDS(nmdsdat, distance='jaccard')
-nmds
-plot(nmds)
-data.scores = as.data.frame(scores(nmds))
-data.scores$quadrat = quaddat2016_nozeros$quadrat
-data.scores$project_year = quaddat2016_nozeros$project_year
-
-ggplot(data.scores, aes(x=NMDS1, y=NMDS2, color=project_year)) + 
-  geom_point() +
-  geom_text(label=data.scores$quadrat) +
-  geom_path() +
-  theme_bw()
-
-
-
-
-
+distdat = rbind(baseline, select(quaddat,-quadrat,-project_year,-year,-month,-date))
 
 # ==============================================================
 # get bray-curtis distance: every date compared to baseline

@@ -28,6 +28,7 @@ veg_selected_noshrub = veg_selected_noblank_noshrub %>%
   mutate(present = rep(1)) %>%
   merge(dates, all=T)
 veg_selected_noshrub$present[is.na(veg_selected_noshrub$present)] <- 0
+write.csv(veg_selected_noshrub, 'communitychange/veg_herbaceous_all.csv', row.names=F)
 
 # calculate average richness per quadrat (including blank quadrats)
 quadrichness = veg_selected_noshrub %>%

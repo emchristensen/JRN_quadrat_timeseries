@@ -6,17 +6,17 @@ library(vegan)
 shrub_grass = read.csv('data/quadrat_veg.csv')
 species_veg = read.csv('data/all_species_counts_cover.csv')
 
-test = dplyr::filter(shrub_grass, quadrat=='A1', year<1946)
-
-mean(vegdist(test[,c('total_shrub','total_grass')],method='bray'))
-
-ggplot(test, aes(x=project_year, y=total_grass)) +
-  geom_point() +
-  ylim(0,1)
-
-var(test$total_grass)
-sd(test$total_grass)
-mean(test$total_grass)
+# test = dplyr::filter(shrub_grass, quadrat=='A1', year<1946)
+# 
+# mean(vegdist(test[,c('total_shrub','total_grass')],method='bray'))
+# 
+# ggplot(test, aes(x=project_year, y=total_grass)) +
+#   geom_point() +
+#   ylim(0,1)
+# 
+# var(test$total_grass)
+# sd(test$total_grass)
+# mean(test$total_grass)
 
 # consecutive disparity index? Fernandez-Martinez et al 2018
 # D works well with non-Gaussian data; takes into account order of observations-- assesses the average rate of change beween consecutive values
@@ -49,6 +49,29 @@ grasscv
 ggsave('Figures/grass_cover_spatial_cv.png', plot=grasscv, width=5, height=3)
 
 
+# =========================================
+# cv vs. cover
+cvmean = grassts %>%
+  group_by(project_year) %>%
+  summarize(mean_grass = mean(total_grass),
+            mean_shrub = mean(total_shrub)) %>%
+  merge(cv_ts, by='project_year')
+
+cvvscover = ggplot(cvmean, aes(x=log(mean_grass), y=log(cv), color=project_year)) +
+  geom_point() +
+  geom_text(label=cvmean$project_year) +
+  xlab('Mean yearly grass cover (m^2)') +
+  ylab('Coefficient of variation') +
+  labs(color='Year') +
+  theme_bw()
+cvvscover
+
+ggsave('Figures/grass_cover_vs_spatial_cv.png', plot=cvvscover, width=5, height=3)
+
+
+
+
+# =======================================================================================
 # what about PV?
 # There's a github repo with functions for it https://rdrr.io/github/T-Engel/CValternatives/
 PV <- function (Z){

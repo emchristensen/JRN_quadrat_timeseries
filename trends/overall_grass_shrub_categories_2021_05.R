@@ -1,7 +1,7 @@
 # Categorize charts as: high/moderate/sparse grass and shrub
 # similar to what was done in overall_grass_shrub_trends.R
 # EMC 12/30/20
-# last update: 5/7/21
+# last update: 5/10/21
 
 library(dplyr)
 library(ggplot2)
@@ -24,6 +24,18 @@ quadrat_veg$category[quadrat_veg$total_shrub==0 & quadrat_veg$total_grass==0] <-
 quadrat_veg$category[quadrat_veg$grass_shrub_ratio>0.5 & quadrat_veg$grass_shrub_ratio<2] <- 'mixed'
 
 table(quadrat_veg$category)
+
+categoryplot = ggplot(quadrat_veg, aes(x=total_grass, y=total_shrub, color=category)) +
+  geom_point() +
+  ylim(0,1) +
+  xlim(0,1) +
+  geom_abline(slope=2) +
+  geom_abline(slope=.5) +
+  ylab('quadrat shrub cover (m^2)') +
+  xlab('quadrat grass cover (m^2)') +
+  theme_bw()
+categoryplot
+ggsave(categoryplot, filename='Figures/Category_shrub_grass_plot.png', width=5, height=3)
 
 # save data frame
 #write.csv(quadrat_veg2,'data/quadrat_veg_categories_from_interp_ts.csv', row.names=F)
