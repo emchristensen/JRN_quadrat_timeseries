@@ -7,11 +7,10 @@
 #'     grouped EPTO, EPTR, and EPHED as all EPHED. Adler's group called EPTO=EPHED, and functionally they're not different
 #'     grouped CYRE14 and CYPER (Adler did)
 #'     changed SPNE -> MUAR
-#'     changed MUTO2 -> MUAR2
-#'     changed SPCO4 -> SPFL2
-#'     changed SPCR -> SPFL2
+#'     changed SPCO4 -> SPORO
+#'     changed SPCR -> SPORO
 #'     changed ARPA9, ARPU9, ARPUL -> ARIST
-#' last run: 2/17/21
+#' last run: 5/24/21
 
 library(dplyr)
 library(lubridate)
