@@ -5,6 +5,10 @@ library(dplyr)
 library(maptools)
 library(ggplot2)
 
+# I don't know why but the union doesn't work without this
+require('maptools')
+gpclibPermit()
+
 # get species list and dates
 splist = read.csv('../JRN_quadrat_datapaper/Plants/Jornada_quadrat_species_list.csv', stringsAsFactors = F)
 quaddates = read.csv('data/quadrats_dates_for_analysis.csv')
@@ -102,6 +106,7 @@ for (quad in quadrats) {
     # plt
   }
 }
+write.csv(final_areas, 'data/quadrat_grass_veg_areas_raw.csv', row.names=F)
 
 # if there was no boundary polygon, default to 1
 grassareas = final_areas
@@ -132,6 +137,7 @@ write.csv(grassareas, 'data/quadrat_veg_from_spatial.csv', row.names=F)
 
 # =======================================================
 # compare to veg data compiled from cover
+grassareas = read.csv('data/quadrat_veg_from_spatial.csv')
 veg = read.csv('data/quadrat_veg.csv')
 
 test = merge(grassareas, veg, by=c('quadrat','year','month'))
